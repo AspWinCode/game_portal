@@ -6,6 +6,5 @@ dist
 .env.local
 coverage
 pnpm-lock.yaml
-package-lock.json
 yarn.lock
 
