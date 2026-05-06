@@ -59,10 +59,7 @@ async function main() {
         organizationId: defaultOrganization.id
       }
     },
-    update: {
-      role: "admin",
-      isActive: true
-    },
+    update: { role: "admin", isActive: true },
     create: {
       userId: admin.id,
       organizationId: defaultOrganization.id,
@@ -78,10 +75,7 @@ async function main() {
         organizationId: defaultOrganization.id
       }
     },
-    update: {
-      role: "trainer",
-      isActive: true
-    },
+    update: { role: "trainer", isActive: true },
     create: {
       userId: trainer.id,
       organizationId: defaultOrganization.id,
@@ -90,17 +84,19 @@ async function main() {
     }
   });
 
+  // Clean up existing seed data
   await prisma.participantStepProgress.deleteMany();
   await prisma.participantProgress.deleteMany();
   await prisma.participant.deleteMany();
-  await prisma.sessionJam.deleteMany();
-  await prisma.session.deleteMany();
-  await prisma.jamVersion.deleteMany();
-  await prisma.stepHint.deleteMany();
-  await prisma.jamStep.deleteMany();
+  await prisma.jamGame.deleteMany();
   await prisma.jam.deleteMany();
+  await prisma.gameVersion.deleteMany();
+  await prisma.stepHint.deleteMany();
+  await prisma.gameStep.deleteMany();
+  await prisma.game.deleteMany();
 
-  const jam = await prisma.jam.create({
+  // Create game template
+  const game = await prisma.game.create({
     data: {
       organizationId: defaultOrganization.id,
       slug: "cyber-racer",
@@ -151,9 +147,9 @@ async function main() {
 
   const steps = [];
   for (let index = 0; index < stepPayloads.length; index += 1) {
-    const step = await prisma.jamStep.create({
+    const step = await prisma.gameStep.create({
       data: {
-        jamId: jam.id,
+        gameId: game.id,
         orderIndex: index + 1,
         ...stepPayloads[index]
       }
@@ -204,41 +200,41 @@ async function main() {
   }
 
   const snapshot = {
-    jam: {
-      id: jam.id,
-      organizationId: jam.organizationId,
-      slug: jam.slug,
-      title: jam.title,
-      shortDescription: jam.shortDescription,
-      fullDescription: jam.fullDescription,
-      themeCode: jam.themeCode,
-      level: jam.level,
-      estimatedDurationMin: jam.estimatedDurationMin,
-      coverImageUrl: jam.coverImageUrl ?? undefined,
-      previewVideoUrl: jam.previewVideoUrl ?? undefined,
-      accentStyle: jam.accentStyle,
-      accentColor: jam.accentColor,
-      finalTitle: jam.finalTitle,
-      finalDescription: jam.finalDescription,
-      finalRewardXp: jam.finalRewardXp,
-      status: jam.status,
-      publishedAt: jam.publishedAt?.toISOString(),
-      createdAt: jam.createdAt.toISOString(),
-      updatedAt: jam.updatedAt.toISOString(),
-      createdBy: jam.createdById,
-      updatedBy: jam.updatedById
+    game: {
+      id: game.id,
+      organizationId: game.organizationId,
+      slug: game.slug,
+      title: game.title,
+      shortDescription: game.shortDescription,
+      fullDescription: game.fullDescription,
+      themeCode: game.themeCode,
+      level: game.level,
+      estimatedDurationMin: game.estimatedDurationMin,
+      coverImageUrl: game.coverImageUrl ?? undefined,
+      previewVideoUrl: game.previewVideoUrl ?? undefined,
+      accentStyle: game.accentStyle,
+      accentColor: game.accentColor,
+      finalTitle: game.finalTitle,
+      finalDescription: game.finalDescription,
+      finalRewardXp: game.finalRewardXp,
+      status: game.status,
+      publishedAt: game.publishedAt?.toISOString(),
+      createdAt: game.createdAt.toISOString(),
+      updatedAt: game.updatedAt.toISOString(),
+      createdBy: game.createdById,
+      updatedBy: game.updatedById
     },
     steps,
     finalScreen: {
-      title: jam.finalTitle,
-      description: jam.finalDescription,
-      rewardXp: jam.finalRewardXp
+      title: game.finalTitle,
+      description: game.finalDescription,
+      rewardXp: game.finalRewardXp
     }
   };
 
-  const version = await prisma.jamVersion.create({
+  const gameVersion = await prisma.gameVersion.create({
     data: {
-      jamId: jam.id,
+      gameId: game.id,
       versionNumber: 1,
       snapshotJson: snapshot as Prisma.InputJsonValue,
       createdBy: admin.id,
@@ -246,7 +242,8 @@ async function main() {
     }
   });
 
-  const session = await prisma.session.create({
+  // Create a jam (session/event)
+  const jam = await prisma.jam.create({
     data: {
       organizationId: defaultOrganization.id,
       title: "Saturday Mini Jam",
@@ -258,10 +255,10 @@ async function main() {
     }
   });
 
-  await prisma.sessionJam.create({
+  await prisma.jamGame.create({
     data: {
-      sessionId: session.id,
-      jamVersionId: version.id,
+      jamId: jam.id,
+      gameVersionId: gameVersion.id,
       isDefault: true,
       orderIndex: 1
     }
@@ -269,7 +266,7 @@ async function main() {
 
   const alice = await prisma.participant.create({
     data: {
-      sessionId: session.id,
+      jamId: jam.id,
       displayName: "Alice",
       avatar: "robot",
       status: "active"
@@ -278,22 +275,22 @@ async function main() {
 
   const max = await prisma.participant.create({
     data: {
-      sessionId: session.id,
+      jamId: jam.id,
       displayName: "Max",
       avatar: "pilot",
       status: "needs_help"
     }
   });
 
-  const [step1, step2, step3] = snapshot.steps;
+  const [step1, step2, step3] = steps;
 
   await prisma.participantProgress.create({
     data: {
       participantId: alice.id,
-      jamVersionId: version.id,
+      gameVersionId: gameVersion.id,
       currentStepId: step2.id,
       completedStepsCount: 1,
-      totalStepsCount: snapshot.steps.length,
+      totalStepsCount: steps.length,
       xpTotal: step1.successXp,
       isCompleted: false
     }
@@ -303,7 +300,7 @@ async function main() {
     data: [
       {
         participantId: alice.id,
-        jamVersionId: version.id,
+        gameVersionId: gameVersion.id,
         stepId: step1.id,
         status: "completed",
         startedAt: new Date(),
@@ -313,7 +310,7 @@ async function main() {
       },
       {
         participantId: alice.id,
-        jamVersionId: version.id,
+        gameVersionId: gameVersion.id,
         stepId: step2.id,
         status: "active",
         startedAt: new Date(),
@@ -322,7 +319,7 @@ async function main() {
       },
       {
         participantId: alice.id,
-        jamVersionId: version.id,
+        gameVersionId: gameVersion.id,
         stepId: step3.id,
         status: "locked"
       }
@@ -332,10 +329,10 @@ async function main() {
   await prisma.participantProgress.create({
     data: {
       participantId: max.id,
-      jamVersionId: version.id,
+      gameVersionId: gameVersion.id,
       currentStepId: step3.id,
       completedStepsCount: 2,
-      totalStepsCount: snapshot.steps.length,
+      totalStepsCount: steps.length,
       xpTotal: step1.successXp + step2.successXp,
       isCompleted: false
     }
@@ -345,7 +342,7 @@ async function main() {
     data: [
       {
         participantId: max.id,
-        jamVersionId: version.id,
+        gameVersionId: gameVersion.id,
         stepId: step1.id,
         status: "completed",
         startedAt: new Date(),
@@ -355,7 +352,7 @@ async function main() {
       },
       {
         participantId: max.id,
-        jamVersionId: version.id,
+        gameVersionId: gameVersion.id,
         stepId: step2.id,
         status: "completed",
         startedAt: new Date(),
@@ -365,7 +362,7 @@ async function main() {
       },
       {
         participantId: max.id,
-        jamVersionId: version.id,
+        gameVersionId: gameVersion.id,
         stepId: step3.id,
         status: "active",
         startedAt: new Date(),
