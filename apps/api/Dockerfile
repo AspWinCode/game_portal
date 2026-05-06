@@ -14,7 +14,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN npm --workspace @game-game/api run prisma:generate
+RUN DATABASE_URL="postgresql://x:x@localhost:5432/x" npm --workspace @game-game/api run prisma:generate
 RUN npm --workspace @game-game/api run build
 
 FROM node:22-alpine AS runtime
