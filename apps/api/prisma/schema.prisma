@@ -1,0 +1,521 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Game content status (draft → published → archived) ──
+enum GameStatus {
+  draft
+  published
+  archived
+
+  @@map("JamStatus")
+}
+
+// ── Jam event status ──
+enum JamStatus {
+  planned
+  active
+  completed
+  cancelled
+
+  @@map("SessionStatus")
+}
+
+enum ParticipantStatus {
+  active
+  stuck
+  needs_help
+  completed
+  offline
+}
+
+enum StepProgressStatus {
+  locked
+  active
+  completed
+}
+
+enum HintType {
+  text
+  image
+  video
+}
+
+enum MediaAssetType {
+  image
+  video
+  file
+}
+
+enum InviteStatus {
+  pending
+  accepted
+  revoked
+  expired
+}
+
+enum SupportCaseStatus {
+  open
+  investigating
+  resolved
+}
+
+enum ServiceIncidentStatus {
+  healthy
+  degraded
+  outage
+  resolved
+}
+
+model Organization {
+  id                String   @id @default(cuid())
+  name              String
+  slug              String   @unique
+  planKey           String   @default("starter") @map("plan_key")
+  logoUrl           String?  @map("logo_url")
+  brandMessage      String?  @map("brand_message")
+  brandAccentColor  String?  @map("brand_accent_color")
+  maxStorageBytes   BigInt   @default(5368709120) @map("max_storage_bytes")
+  maxAdminUsers     Int      @default(2) @map("max_admin_users")
+  maxTrainerUsers   Int      @default(10) @map("max_trainer_users")
+  maxActiveJams     Int      @default(5) @map("max_active_sessions")
+  maxPublishedGames Int      @default(20) @map("max_published_jams")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  memberships         UserOrganizationMembership[]
+  invites             UserInvite[]
+  games               Game[]
+  jams                Jam[]
+  mediaAssets         MediaAsset[]
+  editLocks           GameEditLock[]
+  supportCases        SupportCase[]
+  incidents           IncidentStatus[]
+  supportCaseComments SupportCaseComment[]
+  sessionsAuth        UserSession[]
+  planEvents          OrganizationPlanEvent[]
+
+  @@map("organizations")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  displayName  String
+  passwordHash String   @map("password_hash")
+  role         String
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  createdGames Game[]   @relation("GameCreatedBy")
+  updatedGames Game[]   @relation("GameUpdatedBy")
+  sessions     UserSession[]
+  impersonatedSessions    UserSession[]            @relation("ImpersonatedByUser")
+  memberships             UserOrganizationMembership[]
+  invitesSent             UserInvite[]             @relation("UserInviteCreatedBy")
+  editLocks               GameEditLock[]
+  trainerNotes            TrainerParticipantNote[]
+  supportCaseComments     SupportCaseComment[]
+  organizationPlanEvents  OrganizationPlanEvent[]
+}
+
+model UserSession {
+  id                    String    @id @default(cuid())
+  userId                String    @map("user_id")
+  token                 String    @unique
+  impersonatedById      String?   @map("impersonated_by_id")
+  currentOrganizationId String?   @map("current_organization_id")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  lastSeenAt            DateTime  @default(now()) @map("last_seen_at")
+  expiresAt             DateTime  @map("expires_at")
+  revokedAt             DateTime? @map("revoked_at")
+  ipAddress             String?   @map("ip_address")
+  userAgent             String?   @map("user_agent")
+
+  user                User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  impersonatedBy      User?         @relation("ImpersonatedByUser", fields: [impersonatedById], references: [id], onDelete: SetNull)
+  currentOrganization Organization? @relation(fields: [currentOrganizationId], references: [id], onDelete: SetNull)
+
+  @@index([userId, expiresAt])
+  @@index([impersonatedById])
+  @@index([currentOrganizationId])
+  @@map("user_sessions")
+}
+
+model UserOrganizationMembership {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  organizationId String   @map("organization_id")
+  role           String
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId, role])
+  @@map("user_organization_memberships")
+}
+
+model UserInvite {
+  id             String       @id @default(cuid())
+  organizationId String       @map("organization_id")
+  email          String
+  role           String
+  status         InviteStatus @default(pending)
+  token          String       @unique
+  expiresAt      DateTime     @map("expires_at")
+  acceptedAt     DateTime?    @map("accepted_at")
+  invitedById    String       @map("invited_by")
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy    User         @relation("UserInviteCreatedBy", fields: [invitedById], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, status])
+  @@index([email, status])
+  @@map("user_invites")
+}
+
+// ── Игра (Game) — контент: шаги, подсказки, версии ──────────────────────────
+model Game {
+  id                   String     @id @default(cuid())
+  organizationId       String     @map("organization_id")
+  slug                 String     @unique
+  isTemplate           Boolean    @default(false) @map("is_template")
+  title                String
+  shortDescription     String     @map("short_description")
+  fullDescription      String     @map("full_description")
+  themeCode            String     @map("theme_code")
+  level                String
+  estimatedDurationMin Int        @map("estimated_duration_min")
+  coverImageUrl        String?    @map("cover_image_url")
+  previewVideoUrl      String?    @map("preview_video_url")
+  accentStyle          String     @map("accent_style")
+  accentColor          String     @map("accent_color")
+  finalTitle           String     @map("final_title")
+  finalDescription     String     @map("final_description")
+  finalRewardXp        Int        @map("final_reward_xp")
+  status               GameStatus @default(draft)
+  publishedAt          DateTime?  @map("published_at")
+  createdAt            DateTime   @default(now()) @map("created_at")
+  updatedAt            DateTime   @updatedAt @map("updated_at")
+  createdById          String     @map("created_by")
+  updatedById          String     @map("updated_by")
+
+  createdBy    User          @relation("GameCreatedBy", fields: [createdById], references: [id])
+  updatedBy    User          @relation("GameUpdatedBy", fields: [updatedById], references: [id])
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  steps        GameStep[]
+  versions     GameVersion[]
+  editLock     GameEditLock?
+
+  @@index([organizationId, updatedAt])
+  @@map("jams")
+}
+
+model GameEditLock {
+  id             String   @id @default(cuid())
+  gameId         String   @unique @map("jam_id")
+  organizationId String   @map("organization_id")
+  userId         String   @map("user_id")
+  acquiredAt     DateTime @default(now()) @map("acquired_at")
+  expiresAt      DateTime @map("expires_at")
+
+  game         Game         @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, expiresAt])
+  @@index([userId, expiresAt])
+  @@map("jam_edit_locks")
+}
+
+model GameStep {
+  id             String   @id @default(cuid())
+  gameId         String   @map("jam_id")
+  orderIndex     Int      @map("order_index")
+  title          String
+  description    String
+  goalText       String   @map("goal_text")
+  taskImageUrl   String?  @map("task_image_url")
+  taskVideoUrl   String?  @map("task_video_url")
+  resultVideoUrl String?  @map("result_video_url")
+  resultImageUrl String?  @map("result_image_url")
+  successTitle   String   @map("success_title")
+  successText    String   @map("success_text")
+  successXp      Int      @map("success_xp")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  game  Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  hints StepHint[]
+
+  @@index([gameId, orderIndex])
+  @@map("jam_steps")
+}
+
+model StepHint {
+  id        String   @id @default(cuid())
+  stepId    String   @map("step_id")
+  level     Int
+  text      String
+  hintType  HintType @map("hint_type")
+  mediaUrl  String?  @map("media_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  step GameStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+
+  @@unique([stepId, level])
+  @@map("step_hints")
+}
+
+model GameVersion {
+  id                 String   @id @default(cuid())
+  gameId             String   @map("jam_id")
+  versionNumber      Int      @map("version_number")
+  snapshotJson       Json     @map("snapshot_json")
+  createdAt          DateTime @default(now()) @map("created_at")
+  createdBy          String   @map("created_by")
+  isPublishedVersion Boolean  @default(true) @map("is_published_version")
+
+  game         Game                    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  jamGames     JamGame[]
+  progress     ParticipantProgress[]
+  stepProgress ParticipantStepProgress[]
+
+  @@unique([gameId, versionNumber])
+  @@map("jam_versions")
+}
+
+// ── Джем (Jam) — событие: join-код, список игр, участники ───────────────────
+model Jam {
+  id             String    @id @default(cuid())
+  organizationId String    @map("organization_id")
+  title          String
+  joinCode       String    @unique @map("join_code")
+  joinUrl        String    @map("join_url")
+  status         JamStatus @default(planned)
+  startedAt      DateTime? @map("started_at")
+  endedAt        DateTime? @map("ended_at")
+  createdBy      String    @map("created_by")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  organization Organization           @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  jamGames     JamGame[]
+  participants Participant[]
+  trainerNotes TrainerParticipantNote[]
+
+  @@index([organizationId, createdAt])
+  @@map("sessions")
+}
+
+model JamGame {
+  id             String  @id @default(cuid())
+  jamId          String  @map("session_id")
+  gameVersionId  String  @map("jam_version_id")
+  isDefault      Boolean @default(false) @map("is_default")
+  orderIndex     Int     @map("order_index")
+
+  jam         Jam         @relation(fields: [jamId], references: [id], onDelete: Cascade)
+  gameVersion GameVersion @relation(fields: [gameVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([jamId, gameVersionId])
+  @@index([jamId, orderIndex])
+  @@map("session_jams")
+}
+
+model Participant {
+  id          String            @id @default(cuid())
+  jamId       String            @map("session_id")
+  displayName String            @map("display_name")
+  avatar      String
+  status      ParticipantStatus @default(active)
+  joinedAt    DateTime          @default(now()) @map("joined_at")
+  lastSeenAt  DateTime          @default(now()) @map("last_seen_at")
+
+  jam          Jam                       @relation(fields: [jamId], references: [id], onDelete: Cascade)
+  progress     ParticipantProgress[]
+  stepProgress ParticipantStepProgress[]
+  trainerNotes TrainerParticipantNote[]
+
+  @@map("participants")
+}
+
+model ParticipantProgress {
+  id                  String    @id @default(cuid())
+  participantId       String    @map("participant_id")
+  gameVersionId       String    @map("jam_version_id")
+  currentStepId       String    @map("current_step_id")
+  completedStepsCount Int       @default(0) @map("completed_steps_count")
+  totalStepsCount     Int       @map("total_steps_count")
+  xpTotal             Int       @default(0) @map("xp_total")
+  isCompleted         Boolean   @default(false) @map("is_completed")
+  startedAt           DateTime  @default(now()) @map("started_at")
+  completedAt         DateTime? @map("completed_at")
+  reviewedAt          DateTime? @map("reviewed_at")
+
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  gameVersion GameVersion @relation(fields: [gameVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([participantId, gameVersionId])
+  @@map("participant_progress")
+}
+
+model ParticipantStepProgress {
+  id                  String             @id @default(cuid())
+  participantId       String             @map("participant_id")
+  gameVersionId       String             @map("jam_version_id")
+  stepId              String             @map("step_id")
+  status              StepProgressStatus @default(locked)
+  startedAt           DateTime?          @map("started_at")
+  completedAt         DateTime?          @map("completed_at")
+  hintsOpenedCount    Int                @default(0) @map("hints_opened_count")
+  lastHintLevelOpened Int                @default(0) @map("last_hint_level_opened")
+  needsHelpFlag       Boolean            @default(false) @map("needs_help_flag")
+  needsHelpAt         DateTime?          @map("needs_help_at")
+  helpResolvedAt      DateTime?          @map("help_resolved_at")
+
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  gameVersion GameVersion @relation(fields: [gameVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([participantId, gameVersionId, stepId])
+  @@map("participant_step_progress")
+}
+
+model MediaAsset {
+  id             String         @id @default(cuid())
+  organizationId String         @map("organization_id")
+  type           MediaAssetType
+  url            String
+  filename       String
+  mimeType       String         @map("mime_type")
+  sizeBytes      Int            @map("size_bytes")
+  uploadedBy     String         @map("uploaded_by")
+  createdAt      DateTime       @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, createdAt])
+  @@map("media_assets")
+}
+
+model TrainerParticipantNote {
+  id            String   @id @default(cuid())
+  participantId String   @map("participant_id")
+  jamId         String   @map("session_id")
+  authorId      String   @map("author_id")
+  body          String
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  jam         Jam         @relation(fields: [jamId], references: [id], onDelete: Cascade)
+  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([participantId, createdAt])
+  @@index([jamId, createdAt])
+  @@map("trainer_participant_notes")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  status     String
+  actorType  String   @map("actor_type")
+  actorId    String?  @map("actor_id")
+  actorEmail String?  @map("actor_email")
+  actorRole  String?  @map("actor_role")
+  targetType String?  @map("target_type")
+  targetId   String?  @map("target_id")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  metadata   Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([action, createdAt])
+  @@index([actorType, createdAt])
+  @@index([targetType, targetId])
+  @@map("audit_logs")
+}
+
+model SupportCase {
+  id             String            @id @default(cuid())
+  organizationId String            @map("organization_id")
+  title          String
+  body           String
+  severity       String
+  status         SupportCaseStatus @default(open)
+  createdById    String            @map("created_by")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+  resolvedAt     DateTime?         @map("resolved_at")
+
+  organization Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  comments     SupportCaseComment[]
+
+  @@index([organizationId, status, createdAt])
+  @@map("support_cases")
+}
+
+model IncidentStatus {
+  id             String                @id @default(cuid())
+  organizationId String                @map("organization_id")
+  title          String
+  message        String
+  impact         String?               @map("impact")
+  status         ServiceIncidentStatus @default(healthy)
+  startedAt      DateTime              @default(now()) @map("started_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+  resolvedAt     DateTime?             @map("resolved_at")
+  createdById    String                @map("created_by")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status, startedAt])
+  @@map("incident_statuses")
+}
+
+model SupportCaseComment {
+  id             String   @id @default(cuid())
+  supportCaseId  String   @map("support_case_id")
+  organizationId String   @map("organization_id")
+  authorId       String   @map("author_id")
+  body           String
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  supportCase  SupportCase  @relation(fields: [supportCaseId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  author       User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([supportCaseId, createdAt])
+  @@index([organizationId, createdAt])
+  @@map("support_case_comments")
+}
+
+model OrganizationPlanEvent {
+  id             String   @id @default(cuid())
+  organizationId String   @map("organization_id")
+  changedById    String?  @map("changed_by_id")
+  fromPlanKey    String?  @map("from_plan_key")
+  toPlanKey      String   @map("to_plan_key")
+  reason         String?
+  snapshotJson   Json?    @map("snapshot_json")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  changedBy    User?        @relation(fields: [changedById], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@map("organization_plan_events")
+}

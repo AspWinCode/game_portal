@@ -1,0 +1,17 @@
+
+> @game-game/web@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.14
+
+   Creating an optimized production build ...
+
+> Build error occurred
+[Error: spawn EPERM] { errno: -4048, code: 'EPERM', syscall: 'spawn' }
+npm error Lifecycle script `build` failed with error:
+npm error code 1
+npm error path C:\Users\direc\Downloads\game_game\apps\web
+npm error workspace @game-game/web@0.1.0
+npm error location C:\Users\direc\Downloads\game_game\apps\web
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c next build

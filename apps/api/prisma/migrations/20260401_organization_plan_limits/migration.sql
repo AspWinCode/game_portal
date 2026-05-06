@@ -1,0 +1,6 @@
+ALTER TABLE "organizations"
+ADD COLUMN "plan_key" TEXT NOT NULL DEFAULT 'starter',
+ADD COLUMN "max_admin_users" INTEGER NOT NULL DEFAULT 2,
+ADD COLUMN "max_trainer_users" INTEGER NOT NULL DEFAULT 10,
+ADD COLUMN "max_active_sessions" INTEGER NOT NULL DEFAULT 5,
+ADD COLUMN "max_published_jams" INTEGER NOT NULL DEFAULT 20;

@@ -1,0 +1,218 @@
+
+> game-game-mvp@0.1.0 dev:web
+> npm --workspace @game-game/web run dev
+
+
+> @game-game/web@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.14
+   - Local:        http://localhost:3000
+   - Network:      http://10.0.85.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 3.6s
+ ○ Compiling /student ...
+ ✓ Compiled /student in 3.6s (611 modules)
+ GET /student 200 in 4388ms
+ ○ Compiling /participant/[participantId]/jams ...
+ ✓ Compiled /participant/[participantId]/jams in 717ms (611 modules)
+ ○ Compiling /mission/[participantId] ...
+ GET /participant/cmo30vs7v000icq1w2spwprm9/jams 200 in 1900ms
+ ✓ Compiled /mission/[participantId] in 718ms (619 modules)
+ GET /participant/cmo30vs7v000icq1w2spwprm9/jams 200 in 123ms
+ GET /mission/cmo30vs7v000icq1w2spwprm9 200 in 1475ms
+ ○ Compiling /join/[joinCode] ...
+ ✓ Compiled /join/[joinCode] in 516ms (630 modules)
+ GET /join/CYBER7 200 in 1163ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 557ms (644 modules)
+ GET /admin 200 in 808ms
+ GET /admin 200 in 39ms
+ GET /admin 200 in 34ms
+ GET /admin 200 in 41ms
+ GET /admin 200 in 41ms
+ ○ Compiling /admin/games/[id] ...
+ ✓ Compiled /admin/games/[id] in 2.2s (770 modules)
+ GET /admin/games/cmo3r60wa000fcqbku8r7re2e 200 in 3088ms
+ GET /admin/games/cmo3r60wa000fcqbku8r7re2e 200 in 124ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 641ms (762 modules)
+ GET /uploads/1776481443238-asset.PNG 404 in 957ms
+ ⚠ Found a change in next.config.mjs. Restarting the server to apply the changes...
+   ▲ Next.js 15.5.14
+   - Local:        http://localhost:3000
+   - Network:      http://10.0.85.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 4.5s
+ ○ Compiling /admin ...
+ ✓ Compiled /admin/games/[id] in 10.6s (724 modules)
+ GET /admin 200 in 11322ms
+ GET /admin/games/cmo3r60wa000fcqbku8r7re2e 200 in 5929ms
+ GET /admin/games/cmo3r60wa000fcqbku8r7re2e 200 in 158ms
+ GET /admin/games/cmo3r60wa000fcqbku8r7re2e 200 in 93ms
+ GET /admin/games/cmo3r60wa000fcqbku8r7re2e 200 in 97ms
+ GET /admin/games/cmo3r60wa000fcqbku8r7re2e 200 in 95ms
+ GET /admin/games/cmo3r60wa000fcqbku8r7re2e 200 in 107ms
+ GET /admin 200 in 27ms
+ ✓ Compiled /admin/jams/new in 402ms (732 modules)
+ GET /admin/jams/new 200 in 547ms
+ ○ Compiling /trainer/jams/[id] ...
+ ✓ Compiled /trainer/jams/[id] in 1047ms (853 modules)
+ GET /trainer/jams/cmo3rkv1a0017cqbkra6yam7k 200 in 1721ms
+ GET /trainer/jams/cmo3rkv1a0017cqbkra6yam7k 200 in 96ms
+ ✓ Compiled /trainer in 388ms (861 modules)
+ GET /trainer 200 in 549ms
+ GET /trainer 200 in 56ms
+ GET /admin 200 in 177ms
+ GET /admin/jams/new 200 in 111ms
+ GET /trainer/jams/cmo3s863k002ucqbkhko4evrb 200 in 182ms
+ GET /trainer/jams/cmo3s863k002ucqbkhko4evrb 200 in 117ms
+ ✓ Compiled in 495ms (861 modules)
+ ✓ Compiled in 303ms (861 modules)
+ ✓ Compiled in 386ms (539 modules)
+ GET /admin 200 in 179ms
+ GET /trainer/jams/cmo3s863k002ucqbkhko4evrb 200 in 244ms
+ ✓ Compiled in 544ms (861 modules)
+ ✓ Compiled in 322ms (861 modules)
+ ✓ Compiled in 355ms (861 modules)
+ ✓ Compiled in 498ms (861 modules)
+ ✓ Compiled in 417ms (861 modules)
+ ✓ Compiled in 382ms (861 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /admin 200 in 441ms
+ ✓ Compiled in 412ms (861 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /admin 200 in 274ms
+ ✓ Compiled in 372ms (861 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /admin 200 in 218ms
+ ✓ Compiled in 239ms (861 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /admin 200 in 217ms
+ ⨯ ./components/admin-jam-list-client.tsx
+Error:   [31mx[0m Expected '</', got '}'
+     ,-[[36;1;4mC:\Users\direc\Downloads\game_game\apps\web\components\admin-jam-list-client.tsx[0m:484:1]
+ [2m481[0m |             ))
+ [2m482[0m |           )}
+ [2m483[0m |         </div>
+ [2m484[0m |       )}
+     : [35;1m       ^[0m
+ [2m485[0m |     </div>
+ [2m486[0m |   );
+ [2m487[0m | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/admin-jam-list-client.tsx
+./components/admin-dashboard-client.tsx
+ ✓ Compiled in 378ms (861 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /admin 200 in 170ms
+ ✓ Compiled in 649ms (861 modules)
+ ✓ Compiled in 569ms (861 modules)
+ GET /admin/jams/new 200 in 351ms
+ GET /admin 200 in 52ms
+ GET /admin 200 in 166ms
+ GET /trainer/jams/cmny5e01q008gcqrscnrpmp9c 200 in 184ms
+ ✓ Compiled in 1168ms (861 modules)
+ GET /admin 200 in 207ms
+ GET /admin 200 in 206ms
+ ✓ Compiled in 331ms (861 modules)
+ ✓ Compiled in 349ms (861 modules)
+ ✓ Compiled in 343ms (861 modules)
+ ✓ Compiled in 366ms (861 modules)
+ GET /admin 200 in 235ms
+ GET /admin 200 in 41ms
+ GET /admin 200 in 42ms
+ GET /admin 200 in 37ms
+ GET /admin 200 in 42ms
+ GET /admin 200 in 35ms
+ GET /admin 200 in 37ms
+ GET /admin 200 in 42ms
+ GET /admin 200 in 40ms
+ GET /admin 200 in 40ms
+ GET /admin 200 in 43ms
+ GET /admin 200 in 37ms
+ GET /admin 200 in 35ms
+ GET /admin 200 in 56ms
+ GET /admin 200 in 42ms
+ GET /admin 200 in 37ms
+ GET /admin 200 in 39ms
+ GET /admin 200 in 38ms
+ GET /admin 200 in 41ms
+ GET /admin 200 in 40ms
+ GET /admin 200 in 38ms
+ GET /admin 200 in 46ms
+ GET /admin 200 in 36ms
+ GET /admin 200 in 41ms
+ GET /admin 200 in 36ms
+ GET /admin/jams/new 200 in 98ms
+ GET /admin 200 in 31ms
+ GET /admin 200 in 26ms
+ GET /admin/jams/new 200 in 142ms
+ GET /admin 200 in 77ms
+ GET /admin 200 in 99ms
+ GET /trainer/jams/cmo3tijgm0022cqbwb3t64y5x 200 in 312ms
+ ○ Compiling /student ...
+ ✓ Compiled /student in 2.2s (877 modules)
+ GET /student 200 in 2920ms
+ GET /admin 200 in 190ms
+ ○ Compiling /join/[joinCode] ...
+ ✓ Compiled /join/[joinCode] in 1380ms (832 modules)
+ GET /join/AMV1LG 200 in 2536ms
+ ○ Compiling /participant/[participantId]/jams ...
+ ✓ Compiled /participant/[participantId]/jams in 2.3s (841 modules)
+ GET /participant/cmo3tledg000bcqosnid662sl/jams 200 in 4098ms
+ ○ Compiling /mission/[participantId] ...
+ ✓ Compiled /mission/[participantId] in 1679ms (849 modules)
+ GET /mission/cmo3tledg000bcqosnid662sl 200 in 2658ms
+ ✓ Compiled in 1068ms (849 modules)
+ ✓ Compiled in 1197ms (837 modules)
+ ✓ Compiled in 1212ms (837 modules)
+ GET /participant/cmo3tledg000bcqosnid662sl/jams 200 in 367ms
+ GET /admin 200 in 807ms
+ ○ Compiling /admin/jams/new ...
+ ✓ Compiled /admin/jams/new in 513ms (422 modules)
+ GET /admin/jams/new 200 in 879ms
+ GET /admin 200 in 42ms
+ GET /admin 200 in 47ms
+ GET /join/AMV1LG 200 in 80ms
+ ✓ Compiled in 870ms (751 modules)
+ ✓ Compiled in 654ms (751 modules)
+ ✓ Compiled in 609ms (751 modules)
+ ○ Compiling /trainer/jams/[id] ...
+ ✓ Compiled /trainer/jams/[id] in 978ms (502 modules)
+ GET /trainer/jams/cmo5oez28000ucqosp2gr6yoy 200 in 1568ms
+ ✓ Compiled in 332ms (493 modules)
+ GET /trainer/jams/cmo5oez28000ucqosp2gr6yoy 200 in 324ms
+ ✓ Compiled in 401ms (828 modules)
+ ✓ Compiled in 645ms (828 modules)
+ ✓ Compiled in 420ms (828 modules)
+ ✓ Compiled in 341ms (828 modules)
+ GET /trainer/jams/cmo5oez28000ucqosp2gr6yoy 200 in 592ms
+ GET /trainer/jams/cmo5oez28000ucqosp2gr6yoy 200 in 106ms
+ GET /trainer/jams/cmo5oez28000ucqosp2gr6yoy 200 in 100ms
+ GET /admin 200 in 46ms
+ ○ Compiling /join/[joinCode] ...
+ ✓ Compiled /join/[joinCode] in 620ms (502 modules)
+ GET /join/AMV1LG 200 in 1087ms
+ ✓ Compiled in 615ms (831 modules)
+ ✓ Compiled in 283ms (831 modules)
+ ✓ Compiled in 149ms (496 modules)
+ GET /admin 200 in 130ms
+ GET /join/AMV1LG 200 in 125ms
+ ✓ Compiled /participant/[participantId]/jams in 471ms (502 modules)
+ GET /participant/cmo5oxjmq000dcqgkxpusj5za/jams 200 in 720ms
+ ✓ Compiled in 754ms (829 modules)
+ ✓ Compiled /mission/[participantId] in 415ms (502 modules)
+ GET /mission/cmo5oxjmq000dcqgkxpusj5za 200 in 630ms
+ GET /join/AMV1LG 200 in 95ms
+ ○ Compiling /admin/games/[id] ...
+ ✓ Compiled /admin/games/[id] in 833ms (554 modules)
+ GET /admin/games/cmo5przsu000mcqgk624t3qhg 200 in 1337ms
+ GET /admin/games/cmo5przsu000mcqgk624t3qhg 200 in 132ms

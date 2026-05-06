@@ -1,0 +1,257 @@
+
+> @game-game/web@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.14
+   - Local:        http://localhost:3000
+   - Network:      http://10.0.85.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 3s
+ ○ Compiling / ...
+ ✓ Compiled / in 3s (612 modules)
+ GET / 200 in 3887ms
+ GET / 200 in 125ms
+ GET / 200 in 168ms
+ GET / 200 in 92ms
+ ○ Compiling /account ...
+ ✓ Compiled /account in 720ms (608 modules)
+ GET /account 200 in 1180ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 1070ms (653 modules)
+ GET /admin 200 in 1835ms
+ ○ Compiling /join/[joinCode] ...
+ ✓ Compiled /join/[joinCode] in 577ms (659 modules)
+ GET /join/CYBER7 200 in 1556ms
+ ✓ Compiled /participant/[participantId]/jams in 400ms (668 modules)
+ GET /participant/cmng1k6uq001hcqhcc8yupn6p/jams 200 in 1033ms
+ ○ Compiling /mission/[participantId] ...
+ ✓ Compiled /mission/[participantId] in 592ms (676 modules)
+ GET /mission/cmng1k6uq001hcqhcc8yupn6p 200 in 1196ms
+ GET /account 200 in 306ms
+ ○ Compiling /trainer ...
+ ✓ Compiled /trainer in 609ms (684 modules)
+ GET /trainer 200 in 903ms
+ ○ Compiling /trainer/sessions/[id] ...
+ ✓ Compiled /trainer/sessions/[id] in 1566ms (805 modules)
+ GET /trainer/sessions/cmng1mttl001ycqhcjammvxs0 200 in 3309ms
+ GET /trainer/sessions/cmng1mttl001ycqhcjammvxs0 200 in 399ms
+ GET /trainer/sessions/cmng1mttl001ycqhcjammvxs0 200 in 65ms
+ GET /trainer 200 in 127ms
+ GET /trainer 200 in 80ms
+ ✓ Compiled in 365ms (496 modules)
+ ⨯ ./components/admin-reporting-client.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\direc\Downloads\game_game\apps\web\components\admin-reporting-client.tsx
+    1: Не удается найти указанный файл. (os error 2)
+
+Import trace for requested module:
+./components/admin-reporting-client.tsx
+ ✓ Compiled in 245ms (285 modules)
+ ⨯ ./components/admin-jam-list-client.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\direc\Downloads\game_game\apps\web\components\admin-jam-list-client.tsx
+    1: Не удается найти указанный файл. (os error 2)
+
+Import trace for requested module:
+./components/admin-jam-list-client.tsx
+ ✓ Compiled in 238ms (285 modules)
+ ✓ Compiled in 144ms (285 modules)
+ ⨯ ./components/admin-jam-list-client.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\direc\Downloads\game_game\apps\web\components\admin-jam-list-client.tsx
+    1: Не удается найти указанный файл. (os error 2)
+
+Import trace for requested module:
+./components/admin-jam-list-client.tsx
+ ✓ Compiled in 176ms (285 modules)
+ ✓ Compiled in 128ms (285 modules)
+ ⨯ ./components/admin-jam-list-client.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\direc\Downloads\game_game\apps\web\components\admin-jam-list-client.tsx
+    1: Не удается найти указанный файл. (os error 2)
+
+Import trace for requested module:
+./components/admin-jam-list-client.tsx
+ ✓ Compiled in 337ms (285 modules)
+ ✓ Compiled in 675ms (772 modules)
+ ✓ Compiled in 349ms (772 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 913ms (501 modules)
+ ⨯ Error: Could not find the module "C:\Users\direc\Downloads\game_game\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1815661367'
+}
+ ⨯ Error: Could not find the module "C:\Users\direc\Downloads\game_game\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '1481601910'
+}
+ ⨯ Error: Could not find the module "C:\Users\direc\Downloads\game_game\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '1481601910'
+}
+ ⨯ Error: Could not find the module "C:\Users\direc\Downloads\game_game\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '1481601910'
+}
+ ⨯ Error: Could not find the module "C:\Users\direc\Downloads\game_game\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1815661367'
+}
+ ⨯ Error: Could not find the module "C:\Users\direc\Downloads\game_game\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1815661367'
+}
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function] {
+  digest: '2624946518'
+}
+ ⨯ Error: Could not find the module "C:\Users\direc\Downloads\game_game\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1815661367'
+}
+[TypeError: __webpack_modules__[moduleId] is not a function]
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function]
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function] {
+  page: '/'
+}
+ ○ Compiling /_error ...
+ GET / 500 in 9447ms
+ ✓ Compiled /_error in 4.1s (1123 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1523ms (1032 modules)
+ GET / 404 in 2292ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\page.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\direc\\Downloads\\game_game\\apps\\web\\.next\\server\\app\\page.js',
+  page: '/'
+}
+ ○ Compiling /status ...
+ ✓ Compiled /status in 2.4s (1162 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\direc\Downloads\game_game\apps\web\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\direc\\Downloads\\game_game\\apps\\web\\.next\\server\\pages\\_document.js'
+}
+ GET /admin 200 in 3923ms
+ GET /status 200 in 3937ms
+ GET / 500 in 9052ms
+ ⨯ Error: Cannot find module './869.js'
+Require stack:
+- C:\Users\direc\Downloads\game_game\apps\web\.next\server\webpack-runtime.js
+- C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\status\page.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\require.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\load-components.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\utils.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\swc\options.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\swc\index.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\analysis\parse-module.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\analysis\get-page-static-info.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\page.js:2:7409)
+    at Object.<anonymous> (C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\page.js:2:7459) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\direc\Downloads\game_game\apps\web\.next\server\webpack-runtime.js
+- C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\status\page.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\require.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\load-components.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\utils.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\swc\options.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\swc\index.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\analysis\parse-module.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\analysis\get-page-static-info.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\direc\Downloads\game_game\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\direc\Downloads\game_game\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+Error: Cannot find module './869.js'
+Require stack:
+- C:\Users\direc\Downloads\game_game\apps\web\.next\server\webpack-runtime.js
+- C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\status\page.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\require.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\load-components.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\utils.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\swc\options.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\swc\index.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\analysis\parse-module.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\analysis\get-page-static-info.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\page.js:2:7409)
+    at Object.<anonymous> (C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\page.js:2:7459) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './383.js'
+Require stack:
+- C:\Users\direc\Downloads\game_game\apps\web\.next\server\webpack-runtime.js
+- C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\status\page.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\require.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\load-components.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\utils.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\swc\options.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\swc\index.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\analysis\parse-module.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\analysis\get-page-static-info.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\direc\Downloads\game_game\apps\web\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (C:\Users\direc\Downloads\game_game\apps\web\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ GET / 500 in 740ms
+ GET / 500 in 166ms
+ ⨯ Error: Cannot find module './869.js'
+Require stack:
+- C:\Users\direc\Downloads\game_game\apps\web\.next\server\webpack-runtime.js
+- C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\status\page.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\require.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\load-components.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\utils.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\swc\options.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\swc\index.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\analysis\parse-module.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\build\analysis\get-page-static-info.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\direc\Downloads\game_game\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\page.js:2:7409)
+    at Object.<anonymous> (C:\Users\direc\Downloads\game_game\apps\web\.next\server\app\page.js:2:7459) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ GET / 500 in 474ms

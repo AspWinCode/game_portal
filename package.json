@@ -1,0 +1,21 @@
+{
+  "name": "game-game-mvp",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace @game-game/web run dev",
+    "dev:api": "npm --workspace @game-game/api run start:dev",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "smoke:mvp": "powershell -ExecutionPolicy Bypass -File .\\scripts\\smoke-mvp.ps1",
+    "bootstrap:storage": "powershell -ExecutionPolicy Bypass -File .\\scripts\\bootstrap-local-storage.ps1",
+    "backup:db": "powershell -ExecutionPolicy Bypass -File .\\scripts\\backup-postgres.ps1",
+    "restore:db": "powershell -ExecutionPolicy Bypass -File .\\scripts\\restore-postgres.ps1",
+    "backup:media": "powershell -ExecutionPolicy Bypass -File .\\scripts\\backup-media.ps1",
+    "release:check": "cmd /c .\\scripts\\release-check.cmd"
+  }
+}

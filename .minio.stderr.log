@@ -1,0 +1,24 @@
+MinIO Object Storage Server
+Copyright: 2015-2026 MinIO, Inc.
+License: GNU AGPLv3 - https://www.gnu.org/licenses/agpl-3.0.html
+Version: RELEASE.2025-07-18T21-56-31Z (go1.24.4 windows/amd64)
+
+API: http://192.168.0.23:9000  http://10.0.85.2:9000  http://127.0.0.1:9000 
+WebUI: http://192.168.0.23:9001 http://10.0.85.2:9001 http://127.0.0.1:9001    
+
+Docs: https://docs.min.io
+WARN: Detected default credentials 'minioadmin:minioadmin', we recommend that you change these values with 'MINIO_ROOT_USER' and 'MINIO_ROOT_PASSWORD' environment variables
+INFO: 
+ You are running an older version of MinIO released 1 month before the latest release 
+ Update: Run `mc admin update ALIAS` 
+
+
+
+API: SYSTEM.scanner
+Time: 06:56:02 UTC 04/06/2026
+DeploymentID: 18bda407-ba69-479f-9b52-553a60b98dfd
+Error: .minio.sys/buckets/.usage.json has incomplete body (cmd.IncompleteBody)
+       4: internal\logger\logonce.go:118:logger.(*logOnceType).logOnceIf()
+       3: internal\logger\logonce.go:149:logger.LogOnceIf()
+       2: cmd\logging.go:140:cmd.scannerLogOnceIf()
+       1: cmd\data-usage.go:59:cmd.storeDataUsageInBackend()
