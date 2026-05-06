@@ -111,7 +111,7 @@ export function TrainerSessionListClient({
           isDefault: index === 0
         });
       }
-      router.push(afterCreate ?? `/trainer/jams/${jam.id}`);
+      router.push((afterCreate ?? `/trainer/jams/${jam.id}`) as never);
       router.refresh();
     } catch {
       setError("Не удалось создать джем и добавить выбранные игры.");
