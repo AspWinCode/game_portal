@@ -95,7 +95,11 @@
       "Bash(powershell.exe -Command \"Start-Process cmd -ArgumentList '/k cd /d C:\\\\Users\\\\direc\\\\Downloads\\\\game_game && npm run dev:web' -WindowStyle Normal\")",
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(git rm *)"
     ]
   }
 }
