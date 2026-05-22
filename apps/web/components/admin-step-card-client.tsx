@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AdminGameDetail, HintType, MediaAsset, UpdateStepDto } from "@game-game/shared";
+import type { AdminGameDetail, HintType, MediaAsset, StepHint, UpdateStepDto } from "@game-game/shared";
 import {
   createAdminHint,
   deleteAdminHint,
