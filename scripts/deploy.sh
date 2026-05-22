@@ -88,8 +88,9 @@ $COMPOSE run --rm api sh -c "
 log "Starting all services..."
 $COMPOSE up -d
 
-log "Reloading nginx..."
-$COMPOSE exec nginx nginx -s reload 2>/dev/null || true
+# ── reconnect Caddy (shared reverse proxy) to our network ─────────────────────
+log "Ensuring Caddy (learning-portal-web-1) is in the proxy network..."
+docker network connect proxy learning-portal-web-1 2>/dev/null || true
 
 log ""
 log "✓ Deployed to https://${DOMAIN}"
