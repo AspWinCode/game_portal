@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Game, GameEditLock, MediaAsset, UpdateGameDto } from "@game-game/shared";
 import {
@@ -59,8 +59,10 @@ export function AdminJamEditorClient({
   const [error, setError] = useState<string | null>(null);
   const [lockError, setLockError] = useState<string | null>(null);
   const [editLock, setEditLock] = useState<GameEditLock | undefined>(initialEditLock);
+  const [pendingDraft, setPendingDraft] = useState<UpdateGameDto | null>(null);
   const expectedUpdatedAtRef = useRef(jam.updatedAt);
   const firstRenderRef = useRef(true);
+  const draftKey = `game-draft-${jamId}`;
 
   const payload = useMemo<UpdateGameDto>(
     () => ({
@@ -99,6 +101,53 @@ export function AdminJamEditorClient({
 
   const canEdit = lockState === "owned";
 
+  // Fix C: keep the expected timestamp in sync with whatever the server sends back
+  // after router.refresh() (e.g. following a step reorder that bumps game.updatedAt).
+  useEffect(() => {
+    expectedUpdatedAtRef.current = jam.updatedAt;
+  }, [jam.updatedAt]);
+
+  // Fix A (part 1): on mount, check if there is a localStorage backup from a previous 409.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(draftKey);
+      if (saved) {
+        setPendingDraft(JSON.parse(saved) as UpdateGameDto);
+      }
+    } catch {
+      // localStorage unavailable or corrupt — ignore.
+    }
+  }, [draftKey]);
+
+  const applyDraft = useCallback(() => {
+    if (!pendingDraft) return;
+    setSlug(pendingDraft.slug ?? "");
+    setTitle(pendingDraft.title ?? "");
+    setShortDescription(pendingDraft.shortDescription ?? "");
+    setFullDescription(pendingDraft.fullDescription ?? "");
+    setThemeCode(pendingDraft.themeCode ?? "");
+    setLevel(pendingDraft.level ?? "");
+    setEstimatedDurationMin(String(pendingDraft.estimatedDurationMin ?? ""));
+    setAccentStyle(pendingDraft.accentStyle ?? "");
+    setAccentColor(pendingDraft.accentColor ?? "");
+    setCoverImageUrl(pendingDraft.coverImageUrl ?? "");
+    setPreviewVideoUrl(pendingDraft.previewVideoUrl ?? "");
+    setFinalTitle(pendingDraft.finalTitle ?? "");
+    setFinalDescription(pendingDraft.finalDescription ?? "");
+    setFinalRewardXp(String(pendingDraft.finalRewardXp ?? ""));
+    try {
+      localStorage.removeItem(draftKey);
+    } catch { /* ignore */ }
+    setPendingDraft(null);
+  }, [draftKey, pendingDraft]);
+
+  const discardDraft = useCallback(() => {
+    try {
+      localStorage.removeItem(draftKey);
+    } catch { /* ignore */ }
+    setPendingDraft(null);
+  }, [draftKey]);
+
   async function saveDraft(manual = false) {
     if (!canEdit) {
       return;
@@ -120,7 +169,15 @@ export function AdminJamEditorClient({
     } catch (saveError) {
       const message = getErrorMessage(saveError);
       setError(message);
-      setSaveState(isConflictError(saveError) ? "conflict" : "error");
+      if (isConflictError(saveError)) {
+        // Fix A (part 2): back up the unsaved changes so the user can restore after refresh.
+        try {
+          localStorage.setItem(draftKey, JSON.stringify(payload));
+        } catch { /* localStorage unavailable — skip backup */ }
+        setSaveState("conflict");
+      } else {
+        setSaveState("error");
+      }
     }
   }
 
@@ -267,6 +324,24 @@ export function AdminJamEditorClient({
       ) : null}
 
       {lockError ? <p style={{ color: "#fda4af", margin: 0 }}>{lockError}</p> : null}
+
+      {pendingDraft ? (
+        <div className="card stack" style={{ padding: 16, border: "1px solid #f59e0b" }}>
+          <strong>Найден несохранённый черновик</strong>
+          <p className="subtle" style={{ margin: 0 }}>
+            При прошлом сохранении возник конфликт версий. Черновик был автоматически сохранён в браузере.
+            Восстановить его сейчас?
+          </p>
+          <div className="button-row">
+            <button className="button" type="button" onClick={applyDraft}>
+              Восстановить черновик
+            </button>
+            <button className="button-secondary" type="button" onClick={discardDraft}>
+              Удалить черновик
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div className="grid grid-2">
         <label className="stack">
