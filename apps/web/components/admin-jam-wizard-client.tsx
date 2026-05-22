@@ -60,7 +60,7 @@ function HintEditor({
 }: {
   hint: StepHint;
   disabled: boolean;
-  onSave: (id: string, p: { text: string; level: 1 | 2 | 3; hintType: HintType; mediaUrl?: string }) => Promise<void>;
+  onSave: (id: string, p: { text: string; level: number; hintType: HintType; mediaUrl?: string }) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }) {
   const [text, setText] = useState(hint.text);
@@ -201,13 +201,13 @@ function StepEditor({
   }
 
   async function handleAddHint() {
-    if (!canEdit || step.hints.length >= 3) return;
-    const nextLevel = Math.min(step.hints.length + 1, 3) as 1 | 2 | 3;
+    if (!canEdit || step.hints.length >= 9) return;
+    const nextLevel = step.hints.length + 1;
     setPending("hint");
     try { await createAdminHint(step.id, { level: nextLevel, text: `Подсказка L${nextLevel}`, hintType: "text" }); router.refresh(); } catch (e) { setError(getErr(e, "Ошибка.")); } finally { setPending(null); }
   }
 
-  async function handleSaveHint(hintId: string, p: { text: string; level: 1 | 2 | 3; hintType: HintType; mediaUrl?: string }) {
+  async function handleSaveHint(hintId: string, p: { text: string; level: number; hintType: HintType; mediaUrl?: string }) {
     await updateAdminHint(hintId, p);
   }
 
@@ -240,7 +240,7 @@ function StepEditor({
           {saveIcon ? <span style={{ color: "var(--dim)", fontSize: 11 }}>{saveIcon}</span> : null}
         </div>
         <div className="button-row" style={{ gap: 4 }}>
-          <span className="pill" style={{ fontSize: 11 }}>{step.hints.length}/3</span>
+          <span className="pill" style={{ fontSize: 11 }}>{step.hints.length} подск.</span>
           <span className="pill" style={{ fontSize: 11 }}>{step.successXp} XP</span>
           <span style={{ color: "var(--dim)", fontSize: 16 }}>{expanded ? "\u25B2" : "\u25BC"}</span>
         </div>
@@ -289,8 +289,8 @@ function StepEditor({
           {/* Hints */}
           <div style={{ borderTop: "1px solid var(--panel-border)", paddingTop: 12, marginTop: 4 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: "var(--muted)" }}>ПОДСКАЗКИ ({step.hints.length}/3)</span>
-              <button className="button-ghost" style={{ fontSize: 12 }} onClick={() => void handleAddHint()} disabled={!canEdit || pending !== null || step.hints.length >= 3}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: "var(--muted)" }}>ПОДСКАЗКИ ({step.hints.length})</span>
+              <button className="button-ghost" style={{ fontSize: 12 }} onClick={() => void handleAddHint()} disabled={!canEdit || pending !== null || step.hints.length >= 9}>
                 + Добавить
               </button>
             </div>
