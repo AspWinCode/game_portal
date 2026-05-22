@@ -45,13 +45,13 @@ export function AdminPublishClient({
         <div className="eyebrow">Итог перед публикацией</div>
         <strong>Будет создана версия v{nextVersionNumber}</strong>
         <div className="button-row">
-          <span className="pill">шаги: {stepsCount}</span>
+          <span className="pill">этапы: {stepsCount}</span>
           <span className="pill">подсказки: {hintsCount}</span>
           <span className="pill">{hasMedia ? "медиа добавлены" : "медиа пока не добавлены"}</span>
           <span className="pill">{hasDraftChanges ? "черновик отличается от последней версии" : "совпадает с последней версией"}</span>
         </div>
         <p className="subtle" style={{ marginBottom: 0 }}>
-          В снимок версии попадут текущее описание игры, порядок шагов, подсказки, медиа и финальный экран в их текущем состоянии.
+          В снимок версии попадут текущее описание игры, порядок этапов, подсказки, медиа и финальный экран в их текущем состоянии.
         </p>
       </div>
 

@@ -30,7 +30,7 @@ export function AdminDraftPreviewClient({
         <div className="button-row">
           <span className="pill">{levelLabel(jam.level)}</span>
           <span className="pill">{jam.estimatedDurationMin} мин</span>
-          <span className="pill">{steps.length} шага</span>
+          <span className="pill">{steps.length} этапа</span>
         </div>
       </div>
 
@@ -50,7 +50,7 @@ export function AdminDraftPreviewClient({
         <div className="mission-map">
           {steps.map((step, index) => (
             <div key={step.id} className={`step-node ${index === 0 ? "active" : "locked"}`}>
-              <div className="eyebrow">Шаг {index + 1}</div>
+              <div className="eyebrow">Этап {index + 1}</div>
               <strong style={{ display: "block", marginTop: 10 }}>{step.title}</strong>
               <p className="subtle">{step.goalText}</p>
             </div>
@@ -59,7 +59,7 @@ export function AdminDraftPreviewClient({
       </div>
 
       <div className="stack">
-        <strong>Предпросмотр содержимого шагов</strong>
+        <strong>Предпросмотр содержимого этапов</strong>
         {steps.map((step) => (
           <div key={step.id} className="card" style={{ padding: 16 }}>
             <div className="button-row" style={{ justifyContent: "space-between" }}>

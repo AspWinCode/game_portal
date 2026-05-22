@@ -200,7 +200,7 @@ export function AdminVersionViewerClient({
           <p className="subtle">v{selectedVersion.versionNumber}</p>
         </div>
         <div className="card" style={{ padding: 16 }}>
-          <strong>Шагов</strong>
+          <strong>Этапов</strong>
           <p className="subtle">{selectedVersion.snapshotJson.steps.length}</p>
         </div>
         <div className="card" style={{ padding: 16 }}>
@@ -270,7 +270,7 @@ export function AdminVersionViewerClient({
 
             {comparison.stepChanges.changed.length > 0 ? (
               <div className="stack">
-                <strong>Изменённые шаги</strong>
+                <strong>Изменённые этапы</strong>
                 {comparison.stepChanges.changed.map((item) => (
                   <div key={item} className="card" style={{ padding: 12 }}>
                     <p className="subtle" style={{ margin: 0 }}>
@@ -283,7 +283,7 @@ export function AdminVersionViewerClient({
 
             {comparison.stepChanges.added.length > 0 ? (
               <div className="stack">
-                <strong>Добавленные шаги</strong>
+                <strong>Добавленные этапы</strong>
                 <p className="subtle" style={{ marginBottom: 0 }}>
                   {comparison.stepChanges.added.join(", ")}
                 </p>
@@ -292,7 +292,7 @@ export function AdminVersionViewerClient({
 
             {comparison.stepChanges.removed.length > 0 ? (
               <div className="stack">
-                <strong>Удалённые шаги</strong>
+                <strong>Удалённые этапы</strong>
                 <p className="subtle" style={{ marginBottom: 0 }}>
                   {comparison.stepChanges.removed.join(", ")}
                 </p>
@@ -308,12 +308,12 @@ export function AdminVersionViewerClient({
         <div className="button-row">
           <span className="pill">{levelLabel(selectedVersion.snapshotJson.game.level)}</span>
           <span className="pill">{selectedVersion.snapshotJson.game.estimatedDurationMin} мин</span>
-          <span className="pill">{selectedVersion.snapshotJson.steps.length} шага</span>
+          <span className="pill">{selectedVersion.snapshotJson.steps.length} этапа</span>
         </div>
       </div>
 
       <div className="stack">
-        <strong>Шаги в версии</strong>
+        <strong>Этапы в версии</strong>
         {selectedVersion.snapshotJson.steps.map((step) => (
           <div key={step.id} className="card" style={{ padding: 16 }}>
             <div className="button-row" style={{ justifyContent: "space-between" }}>

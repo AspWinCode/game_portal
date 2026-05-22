@@ -181,7 +181,7 @@ function StepEditor({
     } catch (e) {
       const isConflict = isConflictError(e);
       if (isConflict) stepConflictRef.current = true;
-      setError(getErr(e, "Не удалось сохранить шаг."));
+      setError(getErr(e, "Не удалось сохранить этап."));
       setSaveState(isConflict ? "conflict" : "error");
     }
   }
@@ -195,7 +195,7 @@ function StepEditor({
   }, [canEdit, payload]);
 
   async function handleDelete() {
-    if (!canEdit || !window.confirm("Удалить этот шаг?")) return;
+    if (!canEdit || !window.confirm("Удалить этот этап?")) return;
     setPending("delete");
     try { await deleteAdminStep(step.id); router.refresh(); } catch (e) { setError(getErr(e, "Ошибка.")); } finally { setPending(null); }
   }
@@ -255,7 +255,7 @@ function StepEditor({
               <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} disabled={!canEdit} />
             </label>
             <label className="stack-sm">
-              <span style={{ fontSize: 12, color: "var(--muted)" }}>XP за шаг</span>
+              <span style={{ fontSize: 12, color: "var(--muted)" }}>XP за этап</span>
               <input className="input" value={successXp} onChange={(e) => setSuccessXp(e.target.value)} inputMode="numeric" disabled={!canEdit} />
             </label>
           </div>
@@ -312,7 +312,7 @@ function StepEditor({
               </button>
             </div>
             <button className="button-danger" style={{ fontSize: 12 }} onClick={() => void handleDelete()} disabled={!canEdit || pending !== null}>
-              {pending === "delete" ? "Удаляю..." : "Удалить шаг"}
+              {pending === "delete" ? "Удаляю..." : "Удалить этап"}
             </button>
           </div>
 
@@ -553,7 +553,7 @@ export function AdminJamWizardClient({
     if (!canEdit) return;
     setBusyAction("step"); setError(null);
     try {
-      await createAdminStep(jamId, { title: "Новый шаг", description: "Описание шага.", goalText: "Цель шага.", successTitle: "Готово", successText: "Шаг выполнен.", successXp: 20 });
+      await createAdminStep(jamId, { title: "Новый этап", description: "Описание этапа.", goalText: "Цель этапа.", successTitle: "Готово", successText: "Этап выполнен.", successXp: 20 });
       router.refresh();
     } catch (e) { setError(getErr(e, "Ошибка.")); }
     finally { setBusyAction(null); }
@@ -574,7 +574,7 @@ export function AdminJamWizardClient({
     "Краткое описание новой игры.",
     "Шаблон для быстрой сборки новой игры.",
     "Подробное описание новой игры для прохождения.",
-    "Рабочий шаблон для методиста: шаги, подсказки и финал."
+    "Рабочий шаблон для методиста: этапы, подсказки и финал."
   ];
   const FINAL_PLACEHOLDERS = [
     "Игра завершена",
@@ -595,7 +595,7 @@ export function AdminJamWizardClient({
     const media = Boolean(themeCode.trim() && accentStyle.trim() && accentColor.trim());
 
     // Steps: at least one step with a real title
-    const stepsOk = steps.length > 0 && steps.every((s) => s.title && s.title !== "Новый шаг");
+    const stepsOk = steps.length > 0 && steps.every((s) => s.title && s.title !== "Новый этап");
 
     // Final: filled AND not still a placeholder string
     const finalFilled = Boolean(finalTitle.trim() && finalDesc.trim() && Number(finalXp) > 0);
@@ -774,15 +774,15 @@ export function AdminJamWizardClient({
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>Структура миссии</h2>
                 <button className="button" onClick={() => void handleAddStep()} disabled={!canEdit || busyAction !== null}>
-                  {busyAction === "step" ? "Добавляю..." : "+ Добавить шаг"}
+                  {busyAction === "step" ? "Добавляю..." : "+ Добавить этап"}
                 </button>
               </div>
               {steps.length === 0 ? (
                 <div className="stack empty-state" style={{ minHeight: 200 }}>
-                  <h3 style={{ margin: 0, fontSize: 16, color: "var(--muted)" }}>Нет шагов</h3>
-                  <p className="subtle" style={{ margin: 0 }}>Добавьте первый шаг для миссии.</p>
+                  <h3 style={{ margin: 0, fontSize: 16, color: "var(--muted)" }}>Нет этапов</h3>
+                  <p className="subtle" style={{ margin: 0 }}>Добавьте первый этап для миссии.</p>
                   <button className="button" onClick={() => void handleAddStep()} disabled={!canEdit}>
-                    + Добавить шаг
+                    + Добавить этап
                   </button>
                 </div>
               ) : (
@@ -799,7 +799,7 @@ export function AdminJamWizardClient({
           {activeStep === "final" ? (
             <>
               <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>Финальный экран</h2>
-              <p className="subtle" style={{ margin: 0 }}>Этот экран видит ребёнок после завершения всех шагов миссии.</p>
+              <p className="subtle" style={{ margin: 0 }}>Этот экран видит ребёнок после завершения всех этапов миссии.</p>
               <label className="stack-sm">
                 <span style={{ fontSize: 12, color: "var(--muted)" }}>Заголовок</span>
                 <input className="input" value={finalTitle} onChange={(e) => setFinalTitle(e.target.value)} disabled={!canEdit} />
@@ -863,8 +863,8 @@ export function AdminJamWizardClient({
                     {(!blockingChecks[2]?.passed) ? <button className="button-ghost" style={{ fontSize: 12, padding: "2px 8px" }} onClick={() => setActiveStep("info")}>Основное</button> : null}
                     {/* checks[3] = тема/стиль/длительность → Медиа и стиль */}
                     {(!blockingChecks[3]?.passed) ? <button className="button-ghost" style={{ fontSize: 12, padding: "2px 8px" }} onClick={() => setActiveStep("media")}>Медиа и стиль</button> : null}
-                    {/* checks[1,5,6,7,8] = шаги → Структура миссии */}
-                    {(!blockingChecks[1]?.passed || !blockingChecks[5]?.passed || !blockingChecks[6]?.passed || !blockingChecks[7]?.passed || !blockingChecks[8]?.passed) ? <button className="button-ghost" style={{ fontSize: 12, padding: "2px 8px" }} onClick={() => setActiveStep("steps")}>Шаги миссии</button> : null}
+                    {/* checks[1,5,6,7,8] = этапы → Структура миссии */}
+                    {(!blockingChecks[1]?.passed || !blockingChecks[5]?.passed || !blockingChecks[6]?.passed || !blockingChecks[7]?.passed || !blockingChecks[8]?.passed) ? <button className="button-ghost" style={{ fontSize: 12, padding: "2px 8px" }} onClick={() => setActiveStep("steps")}>Этапы миссии</button> : null}
                     {/* checks[4] = финальный экран → Финальный экран */}
                     {(!blockingChecks[4]?.passed) ? <button className="button-ghost" style={{ fontSize: 12, padding: "2px 8px" }} onClick={() => setActiveStep("final")}>Финальный экран</button> : null}
                   </div>
@@ -876,7 +876,7 @@ export function AdminJamWizardClient({
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
                       <strong>Версия v{nextVersionNumber}</strong>
-                      <p className="subtle" style={{ margin: "4px 0 0", fontSize: 13 }}>{steps.length} шагов, {steps.reduce((s, st) => s + st.hints.length, 0)} подсказок</p>
+                      <p className="subtle" style={{ margin: "4px 0 0", fontSize: 13 }}>{steps.length} этапов, {steps.reduce((s, st) => s + st.hints.length, 0)} подсказок</p>
                     </div>
                     <button className="button" onClick={() => void handlePublish()} disabled={!publishReady || busyAction !== null} style={{ opacity: publishReady ? 1 : 0.5 }}>
                       {busyAction === "publish" ? "Публикую..." : "Опубликовать"}

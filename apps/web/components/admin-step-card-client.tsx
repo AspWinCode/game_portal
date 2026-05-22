@@ -181,7 +181,7 @@ export function AdminStepCardClient({
         router.refresh();
       }
     } catch (saveError) {
-      setError(getErrorMessage(saveError, "Не удалось сохранить шаг."));
+      setError(getErrorMessage(saveError, "Не удалось сохранить этап."));
       setSaveState(isConflictError(saveError) ? "conflict" : "error");
     }
   }
@@ -215,7 +215,7 @@ export function AdminStepCardClient({
       await deleteAdminStep(step.id);
       router.refresh();
     } catch (deleteError) {
-      setError(getErrorMessage(deleteError, "Не удалось удалить шаг."));
+      setError(getErrorMessage(deleteError, "Не удалось удалить этап."));
     } finally {
       setPending(null);
     }
@@ -292,7 +292,7 @@ export function AdminStepCardClient({
       await reorderAdminSteps(jamId, { stepIds: nextIds });
       router.refresh();
     } catch (reorderError) {
-      setError(getErrorMessage(reorderError, "Не удалось поменять порядок шагов."));
+      setError(getErrorMessage(reorderError, "Не удалось поменять порядок этапов."));
     } finally {
       setPending(null);
     }
@@ -302,14 +302,14 @@ export function AdminStepCardClient({
     saveState === "saving"
       ? "Автосохранение..."
       : saveState === "saved"
-        ? "Шаг сохранён"
+        ? "Этап сохранён"
         : saveState === "dirty"
           ? "Есть изменения"
           : saveState === "conflict"
             ? "Нужно обновить страницу"
             : saveState === "error"
               ? "Ошибка сохранения"
-              : "Черновик шага";
+              : "Черновик этапа";
 
   return (
     <div className="card stack" style={{ padding: 18, opacity: canEdit ? 1 : 0.72 }}>
@@ -339,17 +339,17 @@ export function AdminStepCardClient({
       ) : null}
 
       <label className="stack">
-        <span>Название шага</span>
+        <span>Название этапа</span>
         <input className="input" value={title} onChange={(event) => setTitle(event.target.value)} disabled={!canEdit} />
       </label>
 
       <label className="stack">
-        <span>Описание шага</span>
+        <span>Описание этапа</span>
         <textarea className="textarea" value={description} rows={3} onChange={(event) => setDescription(event.target.value)} disabled={!canEdit} />
       </label>
 
       <label className="stack">
-        <span>Цель шага</span>
+        <span>Цель этапа</span>
         <textarea className="textarea" value={goalText} rows={2} onChange={(event) => setGoalText(event.target.value)} disabled={!canEdit} />
       </label>
 
@@ -383,7 +383,7 @@ export function AdminStepCardClient({
           <input className="input" value={successTitle} onChange={(event) => setSuccessTitle(event.target.value)} disabled={!canEdit} />
         </label>
         <label className="stack">
-          <span>XP за шаг</span>
+          <span>XP за этап</span>
           <input className="input" value={successXp} onChange={(event) => setSuccessXp(event.target.value)} inputMode="numeric" disabled={!canEdit} />
         </label>
       </div>
@@ -425,7 +425,7 @@ export function AdminStepCardClient({
           Обновить
         </button>
         <button className="button-secondary" onClick={() => void handleDeleteStep()} disabled={!canEdit || pending !== null}>
-          {pending === "delete" ? "Удаляю..." : "Удалить шаг"}
+          {pending === "delete" ? "Удаляю..." : "Удалить этап"}
         </button>
       </div>
 

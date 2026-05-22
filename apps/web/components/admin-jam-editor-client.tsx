@@ -202,16 +202,16 @@ export function AdminJamEditorClient({
 
     try {
       await createAdminStep(jamId, {
-        title: `Новый шаг ${new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}`,
-        description: "Опишите, что должен сделать ребёнок на этом шаге.",
+        title: `Новый этап ${new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}`,
+        description: "Опишите, что должен сделать ребёнок на этом этапе.",
         goalText: "Короткий и понятный результат, который легко проверить.",
-        successTitle: "Шаг выполнен",
+        successTitle: "Этап выполнен",
         successText: "Можно двигаться дальше.",
         successXp: 20
       });
       router.refresh();
     } catch {
-      setError("Не удалось добавить шаг.");
+      setError("Не удалось добавить этап.");
     } finally {
       setBusyAction(null);
     }
@@ -357,7 +357,7 @@ export function AdminJamEditorClient({
           Сохранить сейчас
         </button>
         <button className="button-secondary" onClick={handleAddStep} disabled={!canEdit || busyAction !== null || saveState === "saving"}>
-          {busyAction === "step" ? "Добавляю..." : "Добавить шаг"}
+          {busyAction === "step" ? "Добавляю..." : "Добавить этап"}
         </button>
       </div>
     </div>

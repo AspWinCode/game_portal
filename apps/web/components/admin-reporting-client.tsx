@@ -527,17 +527,17 @@ export function AdminReportingClient({
 
       <div className="grid grid-3">
         <StepInsightList
-          title="Шаги с максимальным числом подсказок"
+          title="Этапы с максимальным числом подсказок"
           description="Помогает увидеть, где дети чаще всего открывают подсказки."
           items={report.stepInsights.topHintHeavySteps}
         />
         <StepInsightList
-          title="Шаги с максимальным числом help-запросов"
+          title="Этапы с максимальным числом help-запросов"
           description="Показывает, где чаще всего требуется помощь тренера."
           items={report.stepInsights.topHelpSteps}
         />
         <StepInsightList
-          title="Шаги с максимальным drop-off"
+          title="Этапы с максимальным drop-off"
           description="Показывает, где участники чаще всего останавливаются."
           items={report.stepInsights.topDropOffSteps}
         />

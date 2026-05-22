@@ -152,7 +152,7 @@ export function AdminJamListClient({
           ? "Шаблон для быстрой сборки новой игры."
           : "Краткое описание новой игры.",
         fullDescription: isTemplate
-          ? "Рабочий шаблон для методиста: шаги, подсказки и финал."
+          ? "Рабочий шаблон для методиста: этапы, подсказки и финал."
           : "Подробное описание новой игры для прохождения.",
         themeCode: "cyber-it",
         level: "beginner",
@@ -468,7 +468,7 @@ export function AdminJamListClient({
             >
               <option value="updated">Сначала новые</option>
               <option value="title">По названию</option>
-              <option value="steps">Больше шагов</option>
+              <option value="steps">Больше этапов</option>
             </select>
           </div>
 
@@ -494,7 +494,7 @@ export function AdminJamListClient({
                     </p>
                     <div className="button-row">
                       <span className="pill">{levelLabel(template.level)}</span>
-                      <span className="pill">шагов: {template.stepsCount}</span>
+                      <span className="pill">этапов: {template.stepsCount}</span>
                       <span className="pill">подсказок: {template.hintsCount}</span>
                       <span className="pill">{formatRelativeDate(template.updatedAt)}</span>
                     </div>

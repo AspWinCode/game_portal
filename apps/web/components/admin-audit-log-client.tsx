@@ -27,7 +27,7 @@ const ACTION_LABELS: Record<string, string> = {
   "public.participant.select_jam": "Выбор миссии",
   "public.step.open_hint": "Открытие подсказки",
   "public.step.need_help": "Запрос помощи",
-  "public.step.complete": "Завершение шага"
+  "public.step.complete": "Завершение этапа"
 };
 
 export function AdminAuditLogClient({ items, total }: AdminAuditLogClientProps) {

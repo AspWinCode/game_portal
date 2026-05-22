@@ -262,7 +262,7 @@ export function MissionClient({
 
   const missionSummary = useMemo(() => {
     const helpPart = helpRequestsCount > 0 ? `запросов помощи: ${helpRequestsCount}` : "без запросов помощи";
-    return `${version.snapshotJson.game.title}: ${steps.length} шагов, ${xpTotal} XP, ${totalHintsOpened} подсказок, ${helpPart}.`;
+    return `${version.snapshotJson.game.title}: ${steps.length} этапов, ${xpTotal} XP, ${totalHintsOpened} подсказок, ${helpPart}.`;
   }, [helpRequestsCount, totalHintsOpened, version, xpTotal, steps]);
 
   useEffect(() => {
@@ -306,7 +306,7 @@ export function MissionClient({
       }
       setSuccessStep(finishedStep);
     } catch {
-      setError("Не удалось отметить шаг выполненным.");
+      setError("Не удалось отметить этап выполненным.");
     } finally {
       setPending(null);
     }
@@ -422,7 +422,7 @@ export function MissionClient({
               </div>
             </div>
             <div className="button-row" style={{ gap: 6, flexShrink: 0 }}>
-              <span className="pill" style={{ fontSize: 11 }}>Шаг {Math.min(completedStepsCount + 1, steps.length)}/{steps.length}</span>
+              <span className="pill" style={{ fontSize: 11 }}>Этап {Math.min(completedStepsCount + 1, steps.length)}/{steps.length}</span>
               <span className="pill active" style={{ fontSize: 11 }}>{xpDisplay} XP</span>
               {panelMode === "info-only" ? (
                 <button
@@ -457,7 +457,7 @@ export function MissionClient({
                 </div>
                 <div className="grid grid-2" style={{ gap: 8 }}>
                   {[
-                    ["Шагов", steps.length],
+                    ["Этапов", steps.length],
                     ["XP", xpTotal],
                     ["Подсказок", totalHintsOpened],
                     ["Запросов помощи", helpRequestsCount]
@@ -508,7 +508,7 @@ export function MissionClient({
                 {/* Step title */}
                 <div>
                   <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: "var(--muted)", textTransform: "uppercase", marginBottom: 6 }}>
-                    Шаг {currentStepIndex + 1} из {steps.length}
+                    Этап {currentStepIndex + 1} из {steps.length}
                   </div>
                   <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, lineHeight: 1.3 }}>{currentStep.title}</h2>
                 </div>
@@ -625,7 +625,7 @@ export function MissionClient({
               )}
               {editorFull && !isCompleted ? (
                 <span className="pill" style={{ fontSize: 11, background: "color-mix(in srgb, var(--accent) 15%, transparent)", color: "var(--accent-hover)" }}>
-                  Шаг {currentStepIndex + 1}/{steps.length}: {currentStep?.title}
+                  Этап {currentStepIndex + 1}/{steps.length}: {currentStep?.title}
                 </span>
               ) : null}
             </div>
@@ -714,7 +714,7 @@ export function MissionClient({
       {successStep ? (
         <div className="overlay" role="dialog" aria-modal="true">
           <div className="card accent-card stack overlay-card card-bounce">
-            <div className="eyebrow">Шаг выполнен</div>
+            <div className="eyebrow">Этап выполнен</div>
             <h2 className="section-title" style={{ fontSize: 28 }}>{successStep.successTitle}</h2>
             <p className="subtle">{successStep.successText}</p>
             {(successStep.resultImageUrl || successStep.resultVideoUrl) ? (
@@ -725,7 +725,7 @@ export function MissionClient({
             ) : null}
             <div className="button-row">
               <span className="pill active">+{successStep.successXp} XP</span>
-              <span className="pill">{completedStepsCount >= steps.length ? "Миссия завершена!" : "Следующий шаг открыт"}</span>
+              <span className="pill">{completedStepsCount >= steps.length ? "Миссия завершена!" : "Следующий этап открыт"}</span>
             </div>
             <button className="button" onClick={() => setSuccessStep(null)} style={{ width: "100%", justifyContent: "center" }}>
               {completedStepsCount >= steps.length ? "Смотреть итог" : "Продолжить →"}

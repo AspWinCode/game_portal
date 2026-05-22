@@ -40,7 +40,7 @@ export function StudentHomeClient() {
             {[
               { icon: "🔑", title: "1. Введи код", text: "Тренер даёт его перед стартом." },
               { icon: "🎮", title: "2. Выбери игру", text: "Смотри preview и жми «Старт»." },
-              { icon: "🏆", title: "3. Пройди миссию", text: "Завершай шаги и зарабатывай XP." },
+              { icon: "🏆", title: "3. Пройди миссию", text: "Завершай этапы и зарабатывай XP." },
             ].map((item) => (
               <div key={item.title} className="card" style={{ padding: 16 }}>
                 <div style={{ fontSize: 24, marginBottom: 8 }}>{item.icon}</div>

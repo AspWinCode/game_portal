@@ -660,7 +660,7 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                   </span>
                 </div>
                 <p className="subtle">
-                  {item.gameTitle ?? "Игра не выбрана"} · {item.currentStepTitle ?? "Шаг не определён"}
+                  {item.gameTitle ?? "Игра не выбрана"} · {item.currentStepTitle ?? "Этап не определён"}
                 </p>
                 <div className="button-row">
                   <span className="pill">Подсказки: {item.hintsOpenedCount}</span>
@@ -678,7 +678,7 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                     onClick={() =>
                       void handleQuickHelpNote(
                         item.participant.id,
-                        `Помощь: ${item.participant.displayName} | ${item.currentStepTitle ?? "текущий шаг"}`
+                        `Помощь: ${item.participant.displayName} | ${item.currentStepTitle ?? "текущий этап"}`
                       )
                     }
                   >
@@ -783,7 +783,7 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                   </span>
                 </div>
                 <p className="subtle">
-                  {item.gameTitle ?? "Игра не выбрана"} · {item.currentStepTitle ?? "Шаг не определён"}
+                  {item.gameTitle ?? "Игра не выбрана"} · {item.currentStepTitle ?? "Этап не определён"}
                 </p>
                 <div className="button-row">
                   <span className="pill">Подсказки: {item.hintsOpenedCount}</span>
@@ -861,7 +861,7 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
               <tr>
                 <th>Имя</th>
                 <th>Игра</th>
-                <th>Шаг</th>
+                <th>Этап</th>
                 <th>Прогресс</th>
                 <th>Подсказки</th>
                 <th>Статус</th>
@@ -945,7 +945,7 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                   <div className="eyebrow">ГОТОВО К РАЗБОРУ</div>
                   <strong>Участник готов показать результат</strong>
                   <p className="subtle" style={{ marginBottom: 0 }}>
-                    Это завершённая миссия. Можно подойти, посмотреть итоговый экран ребёнка и обсудить самый сложный шаг.
+                    Это завершённая миссия. Можно подойти, посмотреть итоговый экран ребёнка и обсудить самый сложный этап.
                   </p>
                   <div className="button-row">
                     {detail.progress?.reviewedAt ? (
@@ -980,7 +980,7 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
               {detail.progress ? (
                 <div className="grid grid-2">
                   <div className="card" style={{ padding: 16 }}>
-                    <strong>Шагов завершено</strong>
+                    <strong>Этапов завершено</strong>
                     <p className="subtle">{detail.progress.completedStepsCount}/{detail.progress.totalStepsCount}</p>
                   </div>
                   <div className="card" style={{ padding: 16 }}>
@@ -999,7 +999,7 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                     <div className="card" style={{ padding: 14 }}>
                       <strong>Итог миссии</strong>
                       <p className="subtle">
-                        {detail.resultSummary.completedSteps}/{detail.resultSummary.totalSteps} шагов, {detail.resultSummary.xpTotal} XP
+                        {detail.resultSummary.completedSteps}/{detail.resultSummary.totalSteps} этапов, {detail.resultSummary.xpTotal} XP
                       </p>
                     </div>
                     <div className="card" style={{ padding: 14 }}>
@@ -1012,8 +1012,8 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                   <div className="button-row">
                     <span className="pill">
                       {detail.resultSummary.hardestStepTitle
-                        ? `Самый сложный шаг: ${detail.resultSummary.hardestStepTitle}`
-                        : "Сложный шаг не выделен"}
+                        ? `Самый сложный этап: ${detail.resultSummary.hardestStepTitle}`
+                        : "Сложный этап не выделен"}
                     </span>
                     {detail.resultSummary.completedAt ? (
                       <span className="pill">
@@ -1043,7 +1043,7 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                       rows={3}
                       value={noteBody}
                       onChange={(event) => setNoteBody(event.target.value)}
-                      placeholder="Что важно не забыть по этому ребёнку, текущему шагу или разбору результата?"
+                      placeholder="Что важно не забыть по этому ребёнку, текущему этапу или разбору результата?"
                     />
                   </label>
                   <div className="button-row">
@@ -1075,7 +1075,7 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
               </div>
 
               <div className="stack">
-                <strong>Шаги участника</strong>
+                <strong>Этапы участника</strong>
                 {detail.steps.length ? detail.steps.map((step) => (
                   <div key={step.id} className="card" style={{ padding: 16 }}>
                     <div className="button-row" style={{ justifyContent: "space-between" }}>
@@ -1095,7 +1095,7 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                       ) : null}
                     </div>
                   </div>
-                )) : <p className="subtle">Пошаговый прогресс пока не сформирован.</p>}
+                )) : <p className="subtle">Поэтаповый прогресс пока не сформирован.</p>}
               </div>
 
               <div className="stack">

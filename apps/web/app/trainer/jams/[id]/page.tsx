@@ -66,7 +66,7 @@ export default async function TrainerJamPage({ params }: { params: Promise<{ id:
                   </div>
                   <p className="subtle">{item.version?.snapshotJson.game.shortDescription}</p>
                   <div className="button-row">
-                    <span className="pill">Шагов: {item.version?.snapshotJson.steps.length}</span>
+                    <span className="pill">Этапов: {item.version?.snapshotJson.steps.length}</span>
                     <span className="pill">{item.version?.snapshotJson.game.estimatedDurationMin} мин.</span>
                     <span className="pill">Позиция: {item.relation.orderIndex}</span>
                   </div>

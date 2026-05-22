@@ -17,7 +17,7 @@ export default async function AdminGamePage({ params }: { params: Promise<{ id: 
 
   const blockingChecks = [
     { label: "Игра не в архиве", passed: detail.game.status !== "archived" },
-    { label: "Есть хотя бы один шаг", passed: detail.steps.length > 0 },
+    { label: "Есть хотя бы один этап", passed: detail.steps.length > 0 },
     {
       label: "Заполнены название, краткое и полное описание",
       passed: Boolean(detail.game.title.trim() && detail.game.shortDescription.trim() && detail.game.fullDescription.trim())
@@ -38,19 +38,19 @@ export default async function AdminGamePage({ params }: { params: Promise<{ id: 
       passed: Boolean(detail.game.finalTitle.trim() && detail.game.finalDescription.trim() && detail.game.finalRewardXp > 0)
     },
     {
-      label: "У каждого шага есть заголовок, описание и цель",
+      label: "У каждого этапа есть заголовок, описание и цель",
       passed: detail.steps.length > 0 && detail.steps.every((step) => step.title.trim() && step.description.trim() && step.goalText.trim())
     },
     {
-      label: "Блок успеха и XP заполнены для каждого шага",
+      label: "Блок успеха и XP заполнены для каждого этапа",
       passed: detail.steps.length > 0 && detail.steps.every((step) => step.successTitle.trim() && step.successText.trim() && step.successXp > 0)
     },
     {
-      label: "У каждого шага ровно 3 подсказки (L1, L2, L3)",
+      label: "У каждого этапа ровно 3 подсказки (L1, L2, L3)",
       passed: detail.steps.length > 0 && detail.steps.every((step) => step.hints.length === 3 && hasSequentialHints(step.hints.map((h) => h.level)))
     },
     {
-      label: "Порядок шагов последовательный",
+      label: "Порядок этапов последовательный",
       passed: detail.steps.length > 0 && detail.steps.every((step, i) => step.orderIndex === i + 1)
     }
   ];
@@ -59,7 +59,7 @@ export default async function AdminGamePage({ params }: { params: Promise<{ id: 
     { label: "Обложка добавлена", passed: Boolean(detail.game.coverImageUrl) },
     { label: "Preview-видео добавлено", passed: Boolean(detail.game.previewVideoUrl) },
     {
-      label: "Есть итоговое медиа хотя бы у одного шага",
+      label: "Есть итоговое медиа хотя бы у одного этапа",
       passed: detail.steps.some((step) => step.resultImageUrl || step.resultVideoUrl)
     }
   ];

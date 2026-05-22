@@ -84,58 +84,59 @@ export function AdminMediaUploadClient({ initialLibrary }: { initialLibrary: Med
   }, [library.assets, query, sortMode, typeFilter, usageFilter]);
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
+
+    const oversized = files.find((f) => f.size > MAX_SIZE_BYTES);
+    if (oversized) {
+      setError(`Файл «${oversized.name}» слишком большой. Лимит: 25 МБ.`);
       return;
     }
-
-    if (file.size > MAX_SIZE_BYTES) {
-      setError("Файл слишком большой. Текущий лимит: 25 МБ.");
-      return;
-    }
-
-    if (!file.type) {
-      setError("Не удалось определить тип файла.");
+    const noType = files.find((f) => !f.type);
+    if (noType) {
+      setError(`Не удалось определить тип файла «${noType.name}».`);
       return;
     }
 
     setPending(true);
     setError(null);
+    const errors: string[] = [];
 
-    try {
-      const uploaded = await uploadAdminMediaFile(file);
-      setLibrary((current) => ({
-        summary: {
-          totalAssets: current.summary.totalAssets + 1,
-          totalBytes: current.summary.totalBytes + uploaded.sizeBytes,
-          storageLimitBytes: current.summary.storageLimitBytes,
-          usagePercent:
-            current.summary.storageLimitBytes > 0
-              ? Math.round(((current.summary.totalBytes + uploaded.sizeBytes) / current.summary.storageLimitBytes) * 100)
-              : 0,
-          usedAssets: current.summary.usedAssets,
-          orphanedAssets: current.summary.orphanedAssets + 1,
-          imageCount: current.summary.imageCount + (uploaded.type === "image" ? 1 : 0),
-          videoCount: current.summary.videoCount + (uploaded.type === "video" ? 1 : 0),
-          fileCount: current.summary.fileCount + (uploaded.type === "file" ? 1 : 0),
-          largestOrphanedBytes: Math.max(current.summary.largestOrphanedBytes, uploaded.sizeBytes)
-        },
-        assets: [
-          {
-            ...uploaded,
-            usageCount: 0,
-            orphaned: true,
-            usages: []
+    for (const file of files) {
+      try {
+        const uploaded = await uploadAdminMediaFile(file);
+        setLibrary((current) => ({
+          summary: {
+            totalAssets: current.summary.totalAssets + 1,
+            totalBytes: current.summary.totalBytes + uploaded.sizeBytes,
+            storageLimitBytes: current.summary.storageLimitBytes,
+            usagePercent:
+              current.summary.storageLimitBytes > 0
+                ? Math.round(((current.summary.totalBytes + uploaded.sizeBytes) / current.summary.storageLimitBytes) * 100)
+                : 0,
+            usedAssets: current.summary.usedAssets,
+            orphanedAssets: current.summary.orphanedAssets + 1,
+            imageCount: current.summary.imageCount + (uploaded.type === "image" ? 1 : 0),
+            videoCount: current.summary.videoCount + (uploaded.type === "video" ? 1 : 0),
+            fileCount: current.summary.fileCount + (uploaded.type === "file" ? 1 : 0),
+            largestOrphanedBytes: Math.max(current.summary.largestOrphanedBytes, uploaded.sizeBytes)
           },
-          ...current.assets.filter((asset) => asset.id !== uploaded.id)
-        ]
-      }));
-    } catch {
-      setError("Не удалось загрузить файл.");
-    } finally {
-      setPending(false);
-      event.target.value = "";
+          assets: [
+            { ...uploaded, usageCount: 0, orphaned: true, usages: [] },
+            ...current.assets.filter((asset) => asset.id !== uploaded.id)
+          ]
+        }));
+      } catch {
+        errors.push(file.name);
+      }
     }
+
+    if (errors.length > 0) {
+      setError(`Не удалось загрузить: ${errors.join(", ")}.`);
+    }
+
+    setPending(false);
+    event.target.value = "";
   }
 
   async function handleDeleteAsset(assetId: string) {
@@ -198,11 +199,12 @@ export function AdminMediaUploadClient({ initialLibrary }: { initialLibrary: Med
       </div>
 
       <label className="stack">
-        <span>Загрузить файл</span>
+        <span>Загрузить файлы (можно выбрать несколько)</span>
         <input
           className="input"
           type="file"
           accept="image/*,video/*,.pdf,.zip,.txt"
+          multiple
           onChange={handleFileChange}
           disabled={pending}
         />
