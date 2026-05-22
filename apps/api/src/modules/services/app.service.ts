@@ -437,6 +437,28 @@ export class AppService {
     return this.progressRepository.openNextHint(participantId, stepId);
   }
 
+  async requestHint(stepId: string, participantId: string) {
+    const info = await this.progressRepository.requestHintOpen(participantId, stepId);
+    const jamId = await this.sessionRepository.getParticipantJam(participantId);
+    this.emitToJam(jamId, {
+      type: "hint_request_pending",
+      payload: { participantId, participantName: info.participantName, stepId, stepTitle: info.stepTitle },
+      emittedAt: nowIso()
+    });
+    return { ok: true };
+  }
+
+  async approveHint(participantId: string, stepId: string) {
+    const hint = await this.progressRepository.openNextHint(participantId, stepId);
+    const jamId = await this.sessionRepository.getParticipantJam(participantId);
+    this.emitToJam(jamId, {
+      type: "hint_approved",
+      payload: { participantId, stepId, hintLevel: hint.level },
+      emittedAt: nowIso()
+    });
+    return hint;
+  }
+
   async needHelp(stepId: string, participantId: string) {
     const request = await this.progressRepository.requestHelp(participantId, stepId);
     const jamId = await this.sessionRepository.getParticipantJam(participantId);

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import type { GameStep, GameVersion, ParticipantProgress, ParticipantStepProgress, StepHint } from "@game-game/shared";
-import { completeParticipantStep, openParticipantHint, requestParticipantHelp } from "../lib/api";
+import { completeParticipantStep, getParticipantProgress, requestParticipantHelp, requestParticipantHintOpen } from "../lib/api";
 import { ChildAttemptHistoryPanel } from "./child-attempt-history-panel";
 import { saveChildAttempt } from "./child-attempt-history";
 import { clearChildSession, readChildSession } from "./child-session-sync";
@@ -200,6 +200,7 @@ export function MissionClient({
     ensureLocalStepProgress(version, initialStepProgress, participantId, version.id)
   );
   const [pending, setPending] = useState<"complete" | "hint" | "help" | null>(null);
+  const [hintPending, setHintPending] = useState(false); // waiting for trainer approval
   const [error, setError] = useState<string | null>(null);
   const [successStep, setSuccessStep] = useState<GameStep | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>("split");
@@ -312,21 +313,42 @@ export function MissionClient({
     }
   }
 
-  async function handleOpenHint() {
-    if (!currentStep) return;
+  async function handleRequestHint() {
+    if (!currentStep || hintPending) return;
     setPending("hint");
     setError(null);
     try {
-      const hint = await openParticipantHint(currentStep.id, participantId);
-      setStepProgress((current) =>
-        current.map((item) =>
-          item.stepId === currentStep.id
-            ? { ...item, hintsOpenedCount: item.hintsOpenedCount + 1, lastHintLevelOpened: hint.level }
-            : item
-        )
-      );
+      await requestParticipantHintOpen(currentStep.id, participantId);
+      setHintPending(true);
+      // Poll progress every 3 s until trainer approves (lastHintLevelOpened increases)
+      const prevLevel = activeStepProgress?.lastHintLevelOpened ?? 0;
+      let attempts = 0;
+      const poll = window.setInterval(async () => {
+        attempts += 1;
+        if (attempts > 40) { // ~2 min timeout
+          clearInterval(poll);
+          setHintPending(false);
+          setError("Тренер пока не одобрил подсказку. Попробуйте позже.");
+          return;
+        }
+        try {
+          const fresh = await getParticipantProgress(participantId);
+          const freshStep = fresh.stepProgress?.find((s) => s.stepId === currentStep.id);
+          if (freshStep && freshStep.lastHintLevelOpened > prevLevel) {
+            clearInterval(poll);
+            setHintPending(false);
+            setStepProgress((cur) =>
+              cur.map((item) =>
+                item.stepId === currentStep.id
+                  ? { ...item, hintsOpenedCount: freshStep.hintsOpenedCount, lastHintLevelOpened: freshStep.lastHintLevelOpened }
+                  : item
+              )
+            );
+          }
+        } catch { /* ignore poll errors */ }
+      }, 3000);
     } catch {
-      setError("Не удалось открыть подсказку.");
+      setError("Не удалось запросить подсказку.");
     } finally {
       setPending(null);
     }
@@ -534,7 +556,7 @@ export function MissionClient({
 
                 {/* Goal */}
                 <div style={{ background: "color-mix(in srgb, var(--accent) 8%, transparent)", border: "1px solid color-mix(in srgb, var(--accent) 22%, transparent)", borderRadius: 8, padding: 12 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--primary-hover)", marginBottom: 4, letterSpacing: "0.05em" }}>ЦЕЛЬ ШАГА</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--primary-hover)", marginBottom: 4, letterSpacing: "0.05em" }}>ЦЕЛЬ ЭТАПА</div>
                   <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5 }}>{currentStep.goalText}</p>
                 </div>
 
@@ -553,8 +575,19 @@ export function MissionClient({
                     {pending === "complete" ? "Сохраняю..." : "✓ Я сделал!"}
                   </button>
                   <div className="button-row">
-                    <button className="button-secondary" style={{ flex: 1, justifyContent: "center", fontSize: 13 }} disabled={pending !== null || openedHintLevel >= (currentStep.hints.length)} onClick={handleOpenHint}>
-                      {pending === "hint" ? "..." : openedHintLevel >= currentStep.hints.length ? "Все подсказки открыты" : `Подсказка${openedHintLevel > 0 ? ` L${openedHintLevel + 1}` : ""}`}
+                    <button
+                      className="button-secondary"
+                      style={{ flex: 1, justifyContent: "center", fontSize: 13 }}
+                      disabled={pending !== null || hintPending || openedHintLevel >= currentStep.hints.length}
+                      onClick={() => void handleRequestHint()}
+                    >
+                      {hintPending
+                        ? "⏳ Ожидаем тренера..."
+                        : pending === "hint"
+                          ? "..."
+                          : openedHintLevel >= currentStep.hints.length
+                            ? "Все подсказки открыты"
+                            : `Подсказка ${openedHintLevel + 1} из ${currentStep.hints.length}`}
                     </button>
                     <button className="button-secondary" style={{ flex: 1, justifyContent: "center", fontSize: 13 }} disabled={pending !== null || helpRequested} onClick={handleNeedHelp}>
                       {helpRequested ? "Тренер уведомлён" : "Нужна помощь"}
@@ -564,10 +597,12 @@ export function MissionClient({
 
                 {error ? <p style={{ color: "var(--danger)", margin: 0, fontSize: 13 }}>{error}</p> : null}
 
-                {/* Hints */}
+                {/* Hints — spoiler-style, one per opened level */}
                 {openedHints.length > 0 ? (
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--muted)", marginBottom: 8, letterSpacing: "0.05em" }}>ОТКРЫТЫЕ ПОДСКАЗКИ</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--muted)", marginBottom: 8, letterSpacing: "0.05em" }}>
+                      ПОДСКАЗКИ ({openedHints.length} из {currentStep.hints.length})
+                    </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                       {openedHints.map((hint) => <HintCard key={hint.id} hint={hint} />)}
                     </div>

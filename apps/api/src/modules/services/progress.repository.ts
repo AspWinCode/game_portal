@@ -298,6 +298,40 @@ export class ProgressRepository {
     return hint;
   }
 
+  /** Validates that a hint can be requested (next level exists) and returns metadata for the WS event. */
+  async requestHintOpen(participantId: string, stepId: string) {
+    const progress = await this.prisma.participantProgress.findFirst({
+      where: { participantId },
+      orderBy: { startedAt: "desc" }
+    });
+    if (!progress) throw new NotFoundException("Progress not found");
+
+    const stepProgress = await this.prisma.participantStepProgress.findFirst({
+      where: { participantId, gameVersionId: progress.gameVersionId, stepId }
+    });
+    if (!stepProgress) throw new NotFoundException("Step progress not found");
+
+    const version = await this.prisma.gameVersion.findUnique({ where: { id: progress.gameVersionId } });
+    if (!version) throw new NotFoundException("Version not found");
+
+    const snapshot = version.snapshotJson as unknown as { steps: Array<GameStep & { hints: StepHint[] }> };
+    const step = snapshot.steps.find((s) => s.id === stepId);
+    if (!step) throw new NotFoundException("Step not found");
+
+    const nextLevel = stepProgress.lastHintLevelOpened + 1;
+    if (!step.hints.find((h: StepHint) => h.level === nextLevel)) {
+      throw new Error("No more hints available");
+    }
+
+    const participant = await this.prisma.participant.findUnique({ where: { id: participantId } });
+
+    return {
+      participantName: participant?.displayName ?? "Участник",
+      stepTitle: step.title,
+      nextHintLevel: nextLevel
+    };
+  }
+
   async requestHelp(participantId: string, stepId: string): Promise<ParticipantStepProgress> {
     const progress = await this.prisma.participantProgress.findFirst({
       where: { participantId },

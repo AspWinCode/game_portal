@@ -91,6 +91,19 @@ export class PublicController {
     return { data: hint };
   }
 
+  @Post("steps/:stepId/request-hint")
+  @Throttle({ "child-actions": { limit: 20, ttl: 60_000, blockDuration: 30_000 } })
+  async requestHint(@Req() request: AuthRequest, @Param("stepId") stepId: string, @Headers("x-participant-id") participantId: string) {
+    const result = await this.appService.requestHint(stepId, participantId);
+    await this.auditLog.log({
+      action: "public.step.request_hint",
+      ...this.auditLog.participantActor(participantId, request),
+      targetType: "step",
+      targetId: stepId
+    });
+    return { data: result };
+  }
+
   @Post("steps/:stepId/need-help")
   @Throttle({ "child-actions": { limit: 20, ttl: 60_000, blockDuration: 30_000 } })
   async needHelp(@Req() request: AuthRequest, @Param("stepId") stepId: string, @Headers("x-participant-id") participantId: string) {

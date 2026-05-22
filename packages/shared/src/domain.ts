@@ -54,7 +54,7 @@ export interface GameStep {
 export interface StepHint {
   id: string;
   stepId: string;
-  level: 1 | 2 | 3;
+  level: number;
   text: string;
   hintType: HintType;
   mediaUrl?: string;
@@ -196,7 +196,7 @@ export interface ParticipantStepProgress {
   startedAt?: string;
   completedAt?: string;
   hintsOpenedCount: number;
-  lastHintLevelOpened: 0 | 1 | 2 | 3;
+  lastHintLevelOpened: number;
   needsHelpFlag: boolean;
   needsHelpAt?: string;
   helpResolvedAt?: string;
@@ -395,7 +395,9 @@ export interface RealtimeEvent<T = unknown> {
     | "participant_requested_help"
     | "participant_completed_jam"
     | "trainer_resolved_help"
-    | "session_snapshot";
+    | "session_snapshot"
+    | "hint_request_pending"
+    | "hint_approved";
   payload: T;
   emittedAt: string;
 }
@@ -414,4 +416,17 @@ export interface SessionSnapshotRealtimePayload {
   jamId: string;
   participantsCount: number;
   generatedAt: string;
+}
+
+export interface HintRequestPendingRealtimePayload {
+  participantId: string;
+  participantName: string;
+  stepId: string;
+  stepTitle: string;
+}
+
+export interface HintApprovedRealtimePayload {
+  participantId: string;
+  stepId: string;
+  hintLevel: number;
 }

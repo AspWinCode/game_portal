@@ -66,7 +66,7 @@ export interface UpdateStepDto extends Partial<CreateStepDto> {
 }
 
 export interface CreateHintDto {
-  level: 1 | 2 | 3;
+  level: number;
   text: string;
   hintType: "text" | "image" | "video";
   mediaUrl?: string;

@@ -203,8 +203,8 @@ export class CreateHintDtoClass {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(3)
-  level!: 1 | 2 | 3;
+  @Max(9)
+  level!: number;
 
   @IsString()
   @MinLength(1)
@@ -223,8 +223,8 @@ export class UpdateHintDtoClass {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(3)
-  level?: 1 | 2 | 3;
+  @Max(9)
+  level?: number;
 
   @IsOptional()
   @IsString()

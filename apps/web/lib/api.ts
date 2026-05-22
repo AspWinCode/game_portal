@@ -488,6 +488,18 @@ export async function requestParticipantHelp(stepId: string, participantId: stri
   });
 }
 
+export async function requestParticipantHintOpen(stepId: string, participantId: string): Promise<{ ok: boolean }> {
+  return await postJson(`/public/steps/${stepId}/request-hint`, undefined, {
+    headers: {
+      "x-participant-id": participantId
+    }
+  });
+}
+
+export async function approveParticipantHint(participantId: string, stepId: string): Promise<StepHint> {
+  return await postJson(`/admin/participants/${participantId}/approve-hint`, { stepId });
+}
+
 // ─── Trainer Jams (events) ───────────────────────────────────────────────────
 
 export async function getTrainerJam(id: string, cookieHeader?: string): Promise<JamDetail> {

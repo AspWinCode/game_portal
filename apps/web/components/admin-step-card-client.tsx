@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AdminGameDetail, HintType, MediaAsset, StepHint, UpdateStepDto } from "@game-game/shared";
+import type { AdminGameDetail, HintType, MediaAsset, UpdateStepDto } from "@game-game/shared";
 import {
   createAdminHint,
   deleteAdminHint,
@@ -42,7 +42,7 @@ function HintEditor({
 }: {
   hint: StepHint;
   disabled: boolean;
-  onSave: (hintId: string, payload: { text: string; level: 1 | 2 | 3; hintType: HintType; mediaUrl?: string }) => Promise<void>;
+  onSave: (hintId: string, payload: { text: string; level: number; hintType: HintType; mediaUrl?: string }) => Promise<void>;
   onDelete: (hintId: string) => Promise<void>;
   recentAssets: MediaAsset[];
 }) {
@@ -226,7 +226,7 @@ export function AdminStepCardClient({
       return;
     }
 
-    const nextLevel = Math.min(step.hints.length + 1, 3) as 1 | 2 | 3;
+    const nextLevel = step.hints.length + 1;
     setPending("hint");
     setError(null);
     try {
@@ -243,7 +243,7 @@ export function AdminStepCardClient({
     }
   }
 
-  async function handleSaveHint(hintId: string, nextPayload: { text: string; level: 1 | 2 | 3; hintType: HintType; mediaUrl?: string }) {
+  async function handleSaveHint(hintId: string, nextPayload: { text: string; level: number; hintType: HintType; mediaUrl?: string }) {
     if (!canEdit) {
       return;
     }
@@ -418,8 +418,8 @@ export function AdminStepCardClient({
         <button className="button" onClick={() => void saveStep(true)} disabled={!canEdit || pending !== null || saveState === "saving"}>
           Сохранить сейчас
         </button>
-        <button className="button-secondary" onClick={() => void handleAddHint()} disabled={!canEdit || pending !== null || step.hints.length >= 3}>
-          {pending === "hint" ? "Обновляю..." : `Добавить подсказку (${step.hints.length}/3)`}
+        <button className="button-secondary" onClick={() => void handleAddHint()} disabled={!canEdit || pending !== null || step.hints.length >= 9}>
+          {pending === "hint" ? "Обновляю..." : `Добавить подсказку (${step.hints.length})`}
         </button>
         <button className="button-secondary" onClick={() => router.refresh()} disabled={pending !== null}>
           Обновить
@@ -438,7 +438,7 @@ export function AdminStepCardClient({
         </div>
       ) : null}
 
-      <div className="grid grid-3">
+      <div className="stack">
         {step.hints.map((hint) => (
           <HintEditor
             key={hint.id}

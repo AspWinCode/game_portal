@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import type {
+  HintApprovedRealtimePayload,
+  HintRequestPendingRealtimePayload,
   ParticipantHelpRealtimePayload,
   ParticipantProgress,
   ParticipantProgressRealtimePayload,
@@ -13,6 +15,7 @@ import type {
   TrainerParticipantView
 } from "@game-game/shared";
 import {
+  approveParticipantHint,
   createTrainerParticipantNote,
   deleteTrainerParticipantNote,
   getTrainerParticipantDetail,
@@ -66,6 +69,9 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
   const [socketStatus, setSocketStatus] = useState<"connecting" | "connected" | "disconnected">("connecting");
   const [lastRealtimeAt, setLastRealtimeAt] = useState<string | null>(null);
   const [socketRoomSize, setSocketRoomSize] = useState<number>(1);
+  const [pendingHintRequests, setPendingHintRequests] = useState<
+    Record<string, { stepId: string; stepTitle: string; participantName: string }>
+  >({});
   const rowRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
   const socketStatusRef = useRef(socketStatus);
 
@@ -184,6 +190,32 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                 participant: { ...item.participant, status: "active" },
                 lastActivityAt: new Date().toISOString()
               }
+            : item
+        )
+      );
+    });
+
+    socket.on("hint_request_pending", (event: RealtimeEvent<HintRequestPendingRealtimePayload>) => {
+      setLastRealtimeAt(event.emittedAt);
+      const { participantId, stepId, stepTitle, participantName } = event.payload;
+      setPendingHintRequests((current) => ({
+        ...current,
+        [participantId]: { stepId, stepTitle, participantName }
+      }));
+    });
+
+    socket.on("hint_approved", (event: RealtimeEvent<HintApprovedRealtimePayload>) => {
+      setLastRealtimeAt(event.emittedAt);
+      const { participantId } = event.payload;
+      setPendingHintRequests((current) => {
+        const next = { ...current };
+        delete next[participantId];
+        return next;
+      });
+      setParticipants((current) =>
+        current.map((item) =>
+          item.participant.id === participantId
+            ? { ...item, hintsOpenedCount: item.hintsOpenedCount + 1, lastActivityAt: new Date().toISOString() }
             : item
         )
       );
@@ -494,6 +526,17 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
     }
   }
 
+  async function handleApproveHint(participantId: string) {
+    const req = pendingHintRequests[participantId];
+    if (!req) return;
+    try {
+      await approveParticipantHint(participantId, req.stepId);
+      // UI update handled by hint_approved socket event
+    } catch {
+      // leave pending visible so trainer can retry
+    }
+  }
+
   async function handleCopySummary() {
     try {
       await navigator.clipboard.writeText(exportText);
@@ -667,11 +710,22 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                   <span className="pill">
                     Активность: {new Date(item.lastActivityAt).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
                   </span>
+                  {pendingHintRequests[item.participant.id] ? (
+                    <span className="pill" style={{ color: "#f59e0b" }}>⚡ Запрос подсказки</span>
+                  ) : null}
                 </div>
                 <div className="button-row">
                   <button className="button-secondary" onClick={() => setSelectedParticipantId(item.participant.id)}>
                     Открыть
                   </button>
+                  {pendingHintRequests[item.participant.id] ? (
+                    <button
+                      className="button"
+                      onClick={() => void handleApproveHint(item.participant.id)}
+                    >
+                      ✓ Одобрить подсказку
+                    </button>
+                  ) : null}
                   <button
                     className="button-secondary"
                     disabled={notePending === `quick-${item.participant.id}`}
@@ -916,6 +970,14 @@ export function TrainerLiveClient({ initialDetail }: { initialDetail: JamDetail 
                           onClick={() => handleResolve(item.participant.id)}
                         >
                           {resolvingId === item.participant.id ? "Обрабатываю..." : "Помощь обработана"}
+                        </button>
+                      ) : null}
+                      {pendingHintRequests[item.participant.id] ? (
+                        <button
+                          className="button"
+                          onClick={() => void handleApproveHint(item.participant.id)}
+                        >
+                          ✓ Подсказку
                         </button>
                       ) : null}
                     </div>

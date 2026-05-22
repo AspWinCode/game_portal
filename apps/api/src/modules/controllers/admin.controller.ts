@@ -195,6 +195,11 @@ export class AdminController {
     return { data: await this.appService.deleteHint(hintId) };
   }
 
+  @Post("participants/:participantId/approve-hint")
+  async approveHint(@Param("participantId") participantId: string, @Body() body: { stepId: string }) {
+    return { data: await this.appService.approveHint(participantId, body.stepId) };
+  }
+
   @Get("games/:id/versions")
   async listVersions(@Param("id") gameId: string) {
     return { data: await this.appService.listVersions(gameId) };
