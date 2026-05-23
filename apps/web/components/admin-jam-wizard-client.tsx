@@ -863,8 +863,8 @@ export function AdminJamWizardClient({
                     {(!blockingChecks[2]?.passed) ? <button className="button-ghost" style={{ fontSize: 12, padding: "2px 8px" }} onClick={() => setActiveStep("info")}>Основное</button> : null}
                     {/* checks[3] = тема/стиль/длительность → Медиа и стиль */}
                     {(!blockingChecks[3]?.passed) ? <button className="button-ghost" style={{ fontSize: 12, padding: "2px 8px" }} onClick={() => setActiveStep("media")}>Медиа и стиль</button> : null}
-                    {/* checks[1,5,6,7,8] = этапы → Структура миссии */}
-                    {(!blockingChecks[1]?.passed || !blockingChecks[5]?.passed || !blockingChecks[6]?.passed || !blockingChecks[7]?.passed || !blockingChecks[8]?.passed) ? <button className="button-ghost" style={{ fontSize: 12, padding: "2px 8px" }} onClick={() => setActiveStep("steps")}>Этапы миссии</button> : null}
+                    {/* checks[1,5,6,7] = этапы → Структура миссии */}
+                    {(!blockingChecks[1]?.passed || !blockingChecks[5]?.passed || !blockingChecks[6]?.passed || !blockingChecks[7]?.passed) ? <button className="button-ghost" style={{ fontSize: 12, padding: "2px 8px" }} onClick={() => setActiveStep("steps")}>Этапы миссии</button> : null}
                     {/* checks[4] = финальный экран → Финальный экран */}
                     {(!blockingChecks[4]?.passed) ? <button className="button-ghost" style={{ fontSize: 12, padding: "2px 8px" }} onClick={() => setActiveStep("final")}>Финальный экран</button> : null}
                   </div>

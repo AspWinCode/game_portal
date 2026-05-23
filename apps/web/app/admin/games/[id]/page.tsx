@@ -2,10 +2,6 @@ import { AdminJamWizardClient } from "../../../../components/admin-jam-wizard-cl
 import { getAdminGameDetail, getAdminMediaAssets } from "../../../../lib/api";
 import { getServerCookieHeader, requireServerRole } from "../../../../lib/server-auth";
 
-function hasSequentialHints(levels: number[]) {
-  return [...levels].sort((left, right) => left - right).join(",") === "1,2,3";
-}
-
 export default async function AdminGamePage({ params }: { params: Promise<{ id: string }> }) {
   await requireServerRole("admin", "/admin");
   const cookieHeader = await getServerCookieHeader();
@@ -44,10 +40,6 @@ export default async function AdminGamePage({ params }: { params: Promise<{ id: 
     {
       label: "Блок успеха и XP заполнены для каждого этапа",
       passed: detail.steps.length > 0 && detail.steps.every((step) => step.successTitle.trim() && step.successText.trim() && step.successXp > 0)
-    },
-    {
-      label: "У каждого этапа ровно 3 подсказки (L1, L2, L3)",
-      passed: detail.steps.length > 0 && detail.steps.every((step) => step.hints.length === 3 && hasSequentialHints(step.hints.map((h) => h.level)))
     },
     {
       label: "Порядок этапов последовательный",
