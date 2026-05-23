@@ -6,6 +6,7 @@ import LinkExtension from "@tiptap/extension-link";
 import ImageExtension from "@tiptap/extension-image";
 import UnderlineExtension from "@tiptap/extension-underline";
 import { useEffect, useRef, useState } from "react";
+import { HintBlockExtension } from "../lib/hint-block-extension";
 import { uploadAdminMediaFile } from "../lib/api";
 
 // ── Small helpers ─────────────────────────────────────────────────────────────
@@ -171,6 +172,24 @@ function Toolbar({
         onClick={() => editor.chain().focus().toggleCode().run()}>
         {"</>"}
       </ToolBtn>
+      <Sep />
+      <ToolBtn
+        title="Добавить подсказку (видна ребёнку только после одобрения тренером)"
+        active={editor.isActive("hintBlock")}
+        disabled={busy}
+        onClick={() => {
+          editor
+            .chain()
+            .focus()
+            .insertContent({
+              type: "hintBlock",
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Напиши текст подсказки здесь..." }] }],
+            })
+            .run();
+        }}
+      >
+        💡
+      </ToolBtn>
 
       <input
         ref={imageInputRef}
@@ -223,6 +242,7 @@ export function RichTextEditor({
       UnderlineExtension,
       LinkExtension.configure({ openOnClick: false }),
       ImageExtension.configure({ inline: false, allowBase64: false }),
+      HintBlockExtension,
     ],
     content: value || "",
     editable: !disabled,

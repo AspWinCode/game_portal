@@ -147,6 +147,145 @@ function HintCard({ hint }: { hint: StepHint }) {
   );
 }
 
+// ── Inline hint-block spoiler (from TipTap editor) ────────────────────────────
+
+function InlineHintSpoiler({
+  index,
+  innerHtml,
+  isRevealed,
+  isPending,
+  isNext,
+  onRequest,
+}: {
+  index: number;
+  innerHtml: string;
+  isRevealed: boolean;
+  isPending: boolean;
+  isNext: boolean;
+  onRequest: () => void;
+}) {
+  if (isRevealed) {
+    return (
+      <div style={{
+        margin: "12px 0",
+        border: "1px solid rgba(245,158,11,0.35)",
+        borderRadius: 10,
+        overflow: "hidden",
+        background: "rgba(245,158,11,0.06)",
+      }}>
+        <div style={{
+          padding: "5px 12px",
+          fontSize: 11,
+          fontWeight: 700,
+          color: "#f59e0b",
+          letterSpacing: "0.04em",
+          borderBottom: "1px solid rgba(245,158,11,0.2)",
+        }}>
+          💡 Подсказка {index}
+        </div>
+        <div
+          className="rich-editor-content"
+          style={{ padding: "10px 14px", fontSize: 14, lineHeight: 1.6 }}
+          dangerouslySetInnerHTML={{ __html: innerHtml }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      margin: "12px 0",
+      border: "1px dashed rgba(245,158,11,0.3)",
+      borderRadius: 10,
+      padding: "10px 14px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12,
+      background: "rgba(245,158,11,0.04)",
+    }}>
+      <span style={{ fontSize: 13, color: "var(--muted)" }}>
+        💡 Подсказка {index} — скрыта
+      </span>
+      {isNext ? (
+        <button
+          type="button"
+          className="button-secondary"
+          style={{ fontSize: 12, padding: "4px 12px", whiteSpace: "nowrap" }}
+          disabled={isPending}
+          onClick={onRequest}
+        >
+          {isPending ? "⏳ Ожидаем тренера..." : "Запросить"}
+        </button>
+      ) : (
+        <span style={{ fontSize: 11, color: "var(--muted)" }}>сначала предыдущая</span>
+      )}
+    </div>
+  );
+}
+
+/** Parse `<hint-block>` elements out of a description HTML string.
+ *  Returns an array of innerHtml strings in document order. */
+function extractInlineHints(html: string): string[] {
+  if (typeof window === "undefined") return [];
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const blocks = doc.querySelectorAll("hint-block");
+  return Array.from(blocks).map((el) => el.innerHTML);
+}
+
+/** Render a description HTML string, replacing <hint-block> with spoiler components. */
+function DescriptionWithHints({
+  html,
+  openedCount,
+  hintPending,
+  onRequest,
+}: {
+  html: string;
+  openedCount: number;
+  hintPending: boolean;
+  onRequest: () => void;
+}) {
+  if (!html?.trimStart().startsWith("<")) {
+    return <p style={{ margin: 0, color: "var(--muted)", fontSize: 14, lineHeight: 1.6 }}>{html}</p>;
+  }
+
+  // Split description by hint-block tags
+  const parts = html.split(/(<hint-block[^>]*>[\s\S]*?<\/hint-block>)/gi);
+  let hintIndex = 0;
+
+  return (
+    <>
+      {parts.map((part, i) => {
+        const match = part.match(/^<hint-block[^>]*>([\s\S]*?)<\/hint-block>$/i);
+        if (match) {
+          hintIndex += 1;
+          const idx = hintIndex;
+          return (
+            <InlineHintSpoiler
+              key={`hint-${i}`}
+              index={idx}
+              innerHtml={match[1]}
+              isRevealed={idx <= openedCount}
+              isPending={hintPending}
+              isNext={idx === openedCount + 1}
+              onRequest={onRequest}
+            />
+          );
+        }
+        if (!part.trim()) return null;
+        return (
+          <div
+            key={`text-${i}`}
+            className="rich-editor-content"
+            style={{ margin: 0, color: "var(--muted)", fontSize: 14, lineHeight: 1.6 }}
+            dangerouslySetInnerHTML={{ __html: part }}
+          />
+        );
+      })}
+    </>
+  );
+}
+
 function ensureLocalStepProgress(
   version: GameVersion,
   provided: ParticipantStepProgress[],
@@ -248,6 +387,12 @@ export function MissionClient({
   const activeStepProgress = stepProgress.find((item) => item.stepId === currentStep?.id);
   const openedHintLevel = activeStepProgress?.lastHintLevelOpened ?? 0;
   const openedHints = currentStep?.hints.slice(0, openedHintLevel) ?? [];
+  // Count <hint-block> elements in description (inline hints)
+  const inlineHintCount = currentStep?.description
+    ? (currentStep.description.match(/<hint-block/gi) ?? []).length
+    : 0;
+  // Total available hints = inline blocks OR legacy DB hints
+  const totalAvailableHints = inlineHintCount > 0 ? inlineHintCount : (currentStep?.hints.length ?? 0);
   const progressPercent = initialProgress.totalStepsCount
     ? (completedStepsCount / initialProgress.totalStepsCount) * 100
     : 0;
@@ -535,16 +680,13 @@ export function MissionClient({
                   <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, lineHeight: 1.3 }}>{currentStep.title}</h2>
                 </div>
 
-                {/* Description — supports both legacy plain text and rich HTML */}
-                {currentStep.description?.trimStart().startsWith("<") ? (
-                  <div
-                    className="rich-content"
-                    style={{ color: "var(--muted)", fontSize: 14, lineHeight: 1.6 }}
-                    dangerouslySetInnerHTML={{ __html: currentStep.description }}
-                  />
-                ) : (
-                  <p style={{ margin: 0, color: "var(--muted)", fontSize: 14, lineHeight: 1.6 }}>{currentStep.description}</p>
-                )}
+                {/* Description — renders inline hint-block spoilers if present */}
+                <DescriptionWithHints
+                  html={currentStep.description ?? ""}
+                  openedCount={openedHintLevel}
+                  hintPending={hintPending}
+                  onRequest={() => void handleRequestHint()}
+                />
 
                 {/* Task media */}
                 {(currentStep.taskImageUrl || currentStep.taskVideoUrl) ? (
@@ -574,34 +716,43 @@ export function MissionClient({
                   <button className="button" disabled={pending !== null} onClick={handleCompleteStep} style={{ width: "100%", justifyContent: "center" }}>
                     {pending === "complete" ? "Сохраняю..." : "✓ Я сделал!"}
                   </button>
-                  <div className="button-row">
-                    <button
-                      className="button-secondary"
-                      style={{ flex: 1, justifyContent: "center", fontSize: 13 }}
-                      disabled={pending !== null || hintPending || openedHintLevel >= currentStep.hints.length}
-                      onClick={() => void handleRequestHint()}
-                    >
-                      {hintPending
-                        ? "⏳ Ожидаем тренера..."
-                        : pending === "hint"
-                          ? "..."
-                          : openedHintLevel >= currentStep.hints.length
-                            ? "Все подсказки открыты"
-                            : `Подсказка ${openedHintLevel + 1} из ${currentStep.hints.length}`}
-                    </button>
-                    <button className="button-secondary" style={{ flex: 1, justifyContent: "center", fontSize: 13 }} disabled={pending !== null || helpRequested} onClick={handleNeedHelp}>
-                      {helpRequested ? "Тренер уведомлён" : "Нужна помощь"}
-                    </button>
-                  </div>
+                  {/* Legacy DB hints — show button only when step has no inline hint-blocks */}
+                  {inlineHintCount === 0 && totalAvailableHints > 0 ? (
+                    <div className="button-row">
+                      <button
+                        className="button-secondary"
+                        style={{ flex: 1, justifyContent: "center", fontSize: 13 }}
+                        disabled={pending !== null || hintPending || openedHintLevel >= totalAvailableHints}
+                        onClick={() => void handleRequestHint()}
+                      >
+                        {hintPending
+                          ? "⏳ Ожидаем тренера..."
+                          : pending === "hint"
+                            ? "..."
+                            : openedHintLevel >= totalAvailableHints
+                              ? "Все подсказки открыты"
+                              : `Подсказка ${openedHintLevel + 1} из ${totalAvailableHints}`}
+                      </button>
+                      <button className="button-secondary" style={{ flex: 1, justifyContent: "center", fontSize: 13 }} disabled={pending !== null || helpRequested} onClick={handleNeedHelp}>
+                        {helpRequested ? "Тренер уведомлён" : "Нужна помощь"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="button-row">
+                      <button className="button-secondary" style={{ flex: 1, justifyContent: "center", fontSize: 13 }} disabled={pending !== null || helpRequested} onClick={handleNeedHelp}>
+                        {helpRequested ? "Тренер уведомлён" : "Нужна помощь"}
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {error ? <p style={{ color: "var(--danger)", margin: 0, fontSize: 13 }}>{error}</p> : null}
 
-                {/* Hints — spoiler-style, one per opened level */}
-                {openedHints.length > 0 ? (
+                {/* Legacy DB hints — shown at bottom only when no inline hint-blocks */}
+                {inlineHintCount === 0 && openedHints.length > 0 ? (
                   <div>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "var(--muted)", marginBottom: 8, letterSpacing: "0.05em" }}>
-                      ПОДСКАЗКИ ({openedHints.length} из {currentStep.hints.length})
+                      ПОДСКАЗКИ ({openedHints.length} из {totalAvailableHints})
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                       {openedHints.map((hint) => <HintCard key={hint.id} hint={hint} />)}

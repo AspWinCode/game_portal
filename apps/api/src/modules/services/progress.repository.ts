@@ -275,9 +275,31 @@ export class ProgressRepository {
     }
 
     const nextLevel = stepProgress.lastHintLevelOpened + 1;
-    const hint = step.hints.find((item) => item.level === nextLevel);
-    if (!hint) {
-      throw new Error("All hints are already opened");
+
+    // Support inline <hint-block> elements embedded in description HTML
+    const inlineHints = ProgressRepository.extractInlineHints(step.description ?? "");
+    let returnedHint: StepHint;
+
+    if (inlineHints.length > 0) {
+      if (nextLevel > inlineHints.length) {
+        throw new Error("All hints are already opened");
+      }
+      // Construct a virtual StepHint from the inline block content
+      returnedHint = {
+        id: `inline-${step.id}-${nextLevel}`,
+        stepId: step.id,
+        level: nextLevel,
+        text: inlineHints[nextLevel - 1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim(),
+        hintType: "text",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+    } else {
+      const hint = step.hints.find((item) => item.level === nextLevel);
+      if (!hint) {
+        throw new Error("All hints are already opened");
+      }
+      returnedHint = hint;
     }
 
     await this.prisma.participantStepProgress.update({
@@ -295,7 +317,13 @@ export class ProgressRepository {
       }
     });
 
-    return hint;
+    return returnedHint;
+  }
+
+  private static extractInlineHints(description: string): string[] {
+    if (!description) return [];
+    const matches = [...description.matchAll(/<hint-block[^>]*>([\s\S]*?)<\/hint-block>/gi)];
+    return matches.map((m) => m[1]);
   }
 
   /** Validates that a hint can be requested (next level exists) and returns metadata for the WS event. */
@@ -319,7 +347,13 @@ export class ProgressRepository {
     if (!step) throw new NotFoundException("Step not found");
 
     const nextLevel = stepProgress.lastHintLevelOpened + 1;
-    if (!step.hints.find((h: StepHint) => h.level === nextLevel)) {
+
+    const inlineHints = ProgressRepository.extractInlineHints(step.description ?? "");
+    const hasMoreHints = inlineHints.length > 0
+      ? nextLevel <= inlineHints.length
+      : step.hints.find((h: StepHint) => h.level === nextLevel) !== undefined;
+
+    if (!hasMoreHints) {
       throw new Error("No more hints available");
     }
 
