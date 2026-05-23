@@ -86,7 +86,7 @@ export const HintBlockExtension = Node.create({
   name: "hintBlock",
 
   group: "block",
-  content: "paragraph+",
+  content: "block+",
   isolating: true,    // ← Enter doesn't escape the block
   defining: true,     // ← keeps block identity on paste / split
 
